@@ -1,0 +1,27 @@
+.results-container {
+  padding: 1rem;
+}
+
+.results-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #c7d1e0;
+}
+
+.results-scroller {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-bottom: 1rem;
+  overflow-x: visible;
+}
+
+.results-item {
+}
+
+.results-empty {
+  text-align: center;
+  color: #4b5563;
+  margin-top: 1.5rem;
+}
