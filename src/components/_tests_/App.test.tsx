@@ -1,4 +1,3 @@
-// src/App.test.tsx
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +11,7 @@ describe('App component', () => {
 
   it('renders without crashing', () => {
     render(<App />);
-    expect(screen.getByText(/Vite \+ React/i)).toBeInTheDocument();
+    expect(screen.getByText(/Movies Search/i)).toBeInTheDocument();
   });
 
   it('shows error message when fetch returns HTTP error', async () => {
