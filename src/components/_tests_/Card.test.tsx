@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { Card } from '../Card';
 import { describe, it, expect } from 'vitest';
-
+//Test husky pre-push hook
 const baseMovie = {
   id: 1,
   title: 'Inception',
