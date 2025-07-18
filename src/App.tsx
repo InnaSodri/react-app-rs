@@ -30,6 +30,8 @@ const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 export class App extends Component<Record<string, never>, State> {
+  private _isMounted = false; // <-- Add this to track mounted state
+
   state: State = {
     searchTerm: '',
     movies: [],
@@ -39,7 +41,12 @@ export class App extends Component<Record<string, never>, State> {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchMovies('');
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   private buildUrl(term: string): string {
@@ -49,6 +56,8 @@ export class App extends Component<Record<string, never>, State> {
   }
 
   fetchMovies = async (term: string) => {
+    if (!this._isMounted) return;
+
     this.setState({ loading: true, error: null, searchTerm: term });
 
     try {
@@ -63,15 +72,21 @@ export class App extends Component<Record<string, never>, State> {
         throw new Error(`No movies found for "${term}"`);
       }
 
-      this.setState({ movies: data.results, error: null });
+      if (this._isMounted) {
+        this.setState({ movies: data.results, error: null });
+      }
     } catch (err) {
-      this.setState({
-        error:
-          err instanceof Error ? err.message : 'An unexpected error occurred',
-        movies: [],
-      });
+      if (this._isMounted) {
+        this.setState({
+          error:
+            err instanceof Error ? err.message : 'An unexpected error occurred',
+          movies: [],
+        });
+      }
     } finally {
-      this.setState({ loading: false });
+      if (this._isMounted) {
+        this.setState({ loading: false });
+      }
     }
   };
 
