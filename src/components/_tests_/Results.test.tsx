@@ -15,7 +15,7 @@ vi.mock('../Loading', () => ({
 }));
 
 vi.mock('../ErrorMessage', () => ({
-  ErrorMessage: ({ message }: { message: string }) => (
+  default: ({ message }: { message: string }) => (
     <div data-testid="error">Error: {message}</div>
   ),
 }));

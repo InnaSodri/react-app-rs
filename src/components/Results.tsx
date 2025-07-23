@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Card from './Card';
 import { Loading } from './Loading';
-import { ErrorMessage } from './ErrorMessage';
+import ErrorMessage from './ErrorMessage';
 import './Results.css';
 
 interface Movie {

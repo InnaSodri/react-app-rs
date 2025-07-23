@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { ErrorMessage } from '../ErrorMessage';
+import ErrorMessage from '../ErrorMessage';
 
 describe('ErrorMessage', () => {
   it('renders the error title and message', () => {
