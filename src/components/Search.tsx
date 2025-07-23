@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
 import './Search.css';
 
@@ -7,59 +7,48 @@ interface Props {
   initialValue?: string;
 }
 
-interface State {
-  searchTerm: string;
-}
+export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
+  const STORAGE_KEY = 'movies-search-term';
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return initialValue || localStorage.getItem(STORAGE_KEY) || '';
+  });
 
-export class Search extends Component<Props, State> {
-  private STORAGE_KEY = 'movies-search-term';
-
-  constructor(props: Props) {
-    super(props);
-    const savedTerm = localStorage.getItem(this.STORAGE_KEY) || '';
-    this.state = {
-      searchTerm: props.initialValue || savedTerm,
-    };
-  }
-
-  componentDidMount() {
-    if (this.state.searchTerm) {
-      this.props.onSearch(this.state.searchTerm);
+  useEffect(() => {
+    if (searchTerm) {
+      onSearch(searchTerm);
     }
-  }
+  }, []);
 
-  handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: e.target.value });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  handleSearch = () => {
-    const term = this.state.searchTerm.trim();
-    localStorage.setItem(this.STORAGE_KEY, term);
-    this.props.onSearch(term);
+  const handleSearch = () => {
+    const term = searchTerm.trim();
+    localStorage.setItem(STORAGE_KEY, term);
+    onSearch(term);
   };
 
-  handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      this.handleSearch();
+      handleSearch();
     }
   };
 
-  render() {
-    return (
-      <div className="search-container">
-        <input
-          type="text"
-          value={this.state.searchTerm}
-          onChange={this.handleInputChange}
-          onKeyDown={this.handleKeyDown}
-          placeholder="Search movies..."
-          className="search-input"
-        />
-        <button onClick={this.handleSearch} className="search-button">
-          <SearchIcon className="search-icon" />
-          Search
-        </button>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="search-container">
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Search movies..."
+        className="search-input"
+      />
+      <button onClick={handleSearch} className="search-button">
+        <SearchIcon className="search-icon" />
+        Search
+      </button>
+    </div>
+  );
+};
