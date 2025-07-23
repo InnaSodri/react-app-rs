@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Card from './Card';
 import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
@@ -19,38 +19,29 @@ interface Props {
   error: string | null;
 }
 
-export class Results extends Component<Props> {
-  render() {
-    const { movies, loading, error } = this.props;
+export const Results: React.FC<Props> = ({ movies, loading, error }) => {
+  if (loading) return <Loading />;
+  if (error) return <ErrorMessage message={error} />;
 
-    if (loading) {
-      return <Loading />;
-    }
-
-    if (error) {
-      return <ErrorMessage message={error} />;
-    }
-
-    if (movies.length === 0) {
-      return (
-        <div className="results-empty">
-          <p>No movies found.</p>
-          <p>Try searching for a different movie title.</p>
-        </div>
-      );
-    }
-
+  if (movies.length === 0) {
     return (
-      <div className="results-container">
-        <h2 className="results-title">Search Results ({movies.length})</h2>
-        <div className="results-scroller">
-          {movies.map((movie) => (
-            <div key={movie.id} className="results-item">
-              <Card movie={movie} />
-            </div>
-          ))}
-        </div>
+      <div className="results-empty">
+        <p>No movies found.</p>
+        <p>Try searching for a different movie title.</p>
       </div>
     );
   }
-}
+
+  return (
+    <div className="results-container">
+      <h2 className="results-title">Search Results ({movies.length})</h2>
+      <div className="results-scroller">
+        {movies.map((movie) => (
+          <div key={movie.id} className="results-item">
+            <Card movie={movie} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
