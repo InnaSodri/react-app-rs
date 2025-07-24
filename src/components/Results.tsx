@@ -17,9 +17,19 @@ interface Props {
   movies: Movie[];
   loading: boolean;
   error: string | null;
+  onCardClick?: (id: number) => void;
+  currentPage?: number;
+  onPageChange?: (newPage: number) => void;
 }
 
-export const Results: React.FC<Props> = ({ movies, loading, error }) => {
+export const Results: React.FC<Props> = ({
+  movies,
+  loading,
+  error,
+  onCardClick,
+  currentPage = 1,
+  onPageChange,
+}) => {
   if (loading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
 
@@ -32,15 +42,51 @@ export const Results: React.FC<Props> = ({ movies, loading, error }) => {
     );
   }
 
+  const handlePrev = () => {
+    if (onPageChange && currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (onPageChange) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   return (
     <div className="results-container">
       <h2 className="results-title">Search Results ({movies.length})</h2>
       <div className="results-scroller">
         {movies.map((movie) => (
-          <div key={movie.id} className="results-item">
+          <div
+            key={movie.id}
+            className="results-item"
+            onClick={() => onCardClick && onCardClick(movie.id)}
+            style={{ cursor: onCardClick ? 'pointer' : 'default' }}
+          >
             <Card movie={movie} />
           </div>
         ))}
+      </div>
+
+      <div className="pagination-controls" style={{ marginTop: '1rem' }}>
+        <button
+          onClick={handlePrev}
+          disabled={currentPage <= 1}
+          className="pagination-btn"
+          aria-label="Previous Page"
+        >
+          Previous
+        </button>
+        <span style={{ margin: '0 1rem' }}>Page {currentPage}</span>
+        <button
+          onClick={handleNext}
+          className="pagination-btn"
+          aria-label="Next Page"
+        >
+          Next
+        </button>
       </div>
     </div>
   );
