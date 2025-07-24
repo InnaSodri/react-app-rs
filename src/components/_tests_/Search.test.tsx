@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Search } from '../Search';
@@ -18,7 +17,7 @@ describe('Search', () => {
   });
 
   it('renders input with localStorage value', () => {
-    localStorage.setItem(STORAGE_KEY, 'Avatar');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify('Avatar'));
     render(<Search onSearch={() => {}} />);
     expect(screen.getByPlaceholderText('Search movies...')).toHaveValue(
       'Avatar'
@@ -41,7 +40,10 @@ describe('Search', () => {
     fireEvent.click(button);
 
     expect(onSearch).toHaveBeenCalledWith('Inception');
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('Inception');
+
+    const item = localStorage.getItem(STORAGE_KEY);
+    expect(item).not.toBeNull();
+    expect(JSON.parse(item as string)).toBe('Inception');
   });
 
   it('calls onSearch on Enter key press', () => {
@@ -53,6 +55,9 @@ describe('Search', () => {
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(onSearch).toHaveBeenCalledWith('Batman');
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('Batman');
+
+    const item = localStorage.getItem(STORAGE_KEY);
+    expect(item).not.toBeNull();
+    expect(JSON.parse(item as string)).toBe('Batman');
   });
 });
