@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import './Search.css';
 
 interface Props {
@@ -9,24 +10,27 @@ interface Props {
 
 export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
   const STORAGE_KEY = 'movies-search-term';
-  const [searchTerm, setSearchTerm] = useState(() => {
-    return initialValue || localStorage.getItem(STORAGE_KEY) || '';
-  });
+  const [searchTerm, setSearchTerm] = useLocalStorage<string>(
+    STORAGE_KEY,
+    initialValue || ''
+  );
 
   useEffect(() => {
-    if (searchTerm) {
-      onSearch(searchTerm);
+    if (searchTerm.trim()) {
+      onSearch(searchTerm.trim());
     }
-  }, []);
+  }, [searchTerm, onSearch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
   const handleSearch = () => {
-    const term = searchTerm.trim();
-    localStorage.setItem(STORAGE_KEY, term);
-    onSearch(term);
+    const trimmedTerm = searchTerm.trim();
+    if (trimmedTerm) {
+      setSearchTerm(trimmedTerm); // Optional: keeps localStorage clean
+      onSearch(trimmedTerm);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -44,8 +48,9 @@ export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
         onKeyDown={handleKeyDown}
         placeholder="Search movies..."
         className="search-input"
+        aria-label="Search movies"
       />
-      <button onClick={handleSearch} className="search-button">
+      <button onClick={handleSearch} className="search-button" type="button">
         <SearchIcon className="search-icon" />
         Search
       </button>
