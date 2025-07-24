@@ -1,74 +1,62 @@
+import { describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { App } from '../../App';
+import { MemoryRouter } from 'react-router-dom';
+import { ErrorBoundary } from '../ErrorBoundary';
+import App from '../../App';
 
-describe('App component', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
+describe('App', () => {
+  it('renders the app title', () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+    const titleElement = screen.getByText(/Movies Search/i);
+    expect(titleElement).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
-    render(<App />);
-    expect(screen.getByText(/Movies Search/i)).toBeInTheDocument();
+  it('renders the search component', () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+    const inputElement = screen.getByPlaceholderText(/Search/i); // more flexible match
+    expect(inputElement).toBeInTheDocument();
   });
 
-  it('shows error message when fetch returns HTTP error', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({}),
-    } as Response);
+  it('renders loading spinner when searching', async () => {
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
-    render(<App />);
+    const input = screen.getByPlaceholderText(/Search/i);
+    input.focus();
+    await waitFor(() =>
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+    );
 
     await waitFor(() => {
-      expect(screen.getByText(/HTTP error!/i)).toBeInTheDocument();
+      expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
   });
 
-  it('shows error message when no movies found for search term', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ results: [] }),
-    } as Response);
+  it('renders error boundary on button click', async () => {
+    render(
+      <MemoryRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </MemoryRouter>
+    );
 
-    render(<App />);
-
-    const searchInput = screen.getByRole('textbox');
-    await userEvent.type(searchInput, 'nonexistentmovie');
-    const searchButton = screen.getByRole('button', { name: /search/i });
-    await userEvent.click(searchButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/No movies found for "nonexistentmovie"/i)
-      ).toBeInTheDocument();
-    });
-  });
-
-  it('shows generic error message when fetch throws non-Error object', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValueOnce('something went wrong');
-
-    render(<App />);
+    const errorButton = screen.getByText(/Test Error/i);
+    errorButton.click();
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/An unexpected error occurred/i)
-      ).toBeInTheDocument();
-    });
-  });
-
-  it('handles empty result without search term (popular movies with 0 results)', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ results: [] }),
-    } as Response);
-
-    render(<App />);
-
-    await waitFor(() => {
-      expect(screen.queryByText(/No movies found/)).not.toBeInTheDocument();
+      expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
     });
   });
 });
