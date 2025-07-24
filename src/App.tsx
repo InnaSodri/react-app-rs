@@ -1,8 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams, Routes, Route } from 'react-router-dom';
 import { Film } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Search } from './components/Search';
 import { Results } from './components/Results';
+import { About } from './components/About';
+import Details from './components/Details';
 import './App.css';
 
 interface Movie {
@@ -25,63 +28,79 @@ export const App: React.FC = () => {
   const [shouldThrowError, setShouldThrowError] = useState(false);
 
   const isMounted = useRef(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const detailsId = searchParams.get('details');
 
   useEffect(() => {
-    const fetchInitialMovies = async () => {
-      await fetchMovies('');
+    isMounted.current = true; // <-- Reset isMounted here on every effect run
+
+    const fetchMovies = async (term: string, pageNum: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const url = term.trim()
+          ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(term)}&page=${pageNum}`
+          : `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${pageNum}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.results.length === 0 && term.trim()) {
+          throw new Error(`No movies found for "${term}"`);
+        }
+        if (isMounted.current) setMovies(data.results);
+      } catch (err: unknown) {
+        if (isMounted.current) {
+          if (err instanceof Error) {
+            setError(err.message);
+          } else {
+            setError('An unexpected error occurred');
+          }
+          setMovies([]);
+        }
+      } finally {
+        if (isMounted.current) setLoading(false);
+      }
     };
 
-    fetchInitialMovies();
+    fetchMovies(searchTerm, page);
 
     return () => {
-      isMounted.current = false;
+      isMounted.current = false; // <-- Set false on cleanup
     };
-  }, []);
+  }, [searchTerm, page]);
 
-  const buildUrl = (term: string): string => {
-    return term.trim()
-      ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(term)}&page=1`
-      : `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=1`;
-  };
-
-  const fetchMovies = async (term: string) => {
+  const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setLoading(true);
-    setError(null);
-
-    try {
-      const url = buildUrl(term);
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.results.length === 0 && term.trim()) {
-        throw new Error(`No movies found for "${term}"`);
-      }
-
-      if (isMounted.current) {
-        setMovies(data.results);
-      }
-    } catch (err) {
-      if (isMounted.current) {
-        setError(
-          err instanceof Error ? err.message : 'An unexpected error occurred'
-        );
-        setMovies([]);
-      }
-    } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
-    }
+    setSearchParams({ page: '1' });
   };
 
-  const handleTestError = () => {
-    setShouldThrowError(true);
+  const handlePageChange = (newPage: number) => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set('page', newPage.toString());
+      if (detailsId) params.set('details', detailsId);
+      return params;
+    });
+  };
+
+  const openDetails = (id: number) => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set('details', id.toString());
+      return params;
+    });
+  };
+
+  const closeDetails = () => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.delete('details');
+      return params;
+    });
   };
 
   if (shouldThrowError) {
@@ -104,10 +123,39 @@ export const App: React.FC = () => {
           </p>
         </header>
 
-        <Search onSearch={fetchMovies} initialValue={searchTerm} />
-        <Results movies={movies} loading={loading} error={error} />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Search onSearch={handleSearch} initialValue={searchTerm} />
+                <div className="master-detail-layout">
+                  <Results
+                    movies={movies}
+                    loading={loading}
+                    error={error}
+                    onCardClick={openDetails}
+                    currentPage={page}
+                    onPageChange={handlePageChange}
+                  />
+                  {detailsId && (
+                    <Details
+                      movieId={Number(detailsId)}
+                      onClose={closeDetails}
+                    />
+                  )}
+                </div>
+              </>
+            }
+          />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<p>404 - Page Not Found</p>} />
+        </Routes>
 
-        <button className="test-error-btn" onClick={handleTestError}>
+        <button
+          className="test-error-btn"
+          onClick={() => setShouldThrowError(true)}
+        >
           Test Error
         </button>
       </main>
