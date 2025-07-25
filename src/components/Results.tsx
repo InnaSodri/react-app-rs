@@ -62,6 +62,7 @@ export const Results: React.FC<Props> = ({
           <div
             key={movie.id}
             className="results-item"
+            data-testid="movie-card"
             onClick={() => onCardClick && onCardClick(movie.id)}
             style={{ cursor: onCardClick ? 'pointer' : 'default' }}
           >
@@ -84,6 +85,7 @@ export const Results: React.FC<Props> = ({
           onClick={handleNext}
           className="pagination-btn"
           aria-label="Next Page"
+          data-testid="next-page"
         >
           Next
         </button>

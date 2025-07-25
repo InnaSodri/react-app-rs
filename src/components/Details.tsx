@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
 import { Movie } from '../types';
 import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
@@ -44,19 +45,40 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
   if (!movie) return null;
 
   return (
-    <div className="details-panel">
-      <button className="close-button" onClick={onClose}>
-        ✖
-      </button>
-      <h2>{movie.title}</h2>
-      <p>{movie.overview}</p>
-      <p>
-        <strong>Release Date:</strong> {movie.release_date}
-      </p>
-      <p>
-        <strong>Rating:</strong> ⭐ {movie.vote_average}
-      </p>
-    </div>
+    <>
+      <div className="details-overlay" onClick={onClose}></div>
+      <div className="details-panel">
+        <button
+          className="close-button"
+          onClick={onClose}
+          aria-label="Close details panel"
+        >
+          ✖
+        </button>
+
+        <div className="details-header">
+          {movie.poster_path && (
+            <img
+              src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+              alt={movie.title}
+              className="details-poster"
+            />
+          )}
+          <div className="details-info">
+            <h2 className="details-title">{movie.title}</h2>
+            <div className="details-meta">
+              <strong>Year:</strong> {movie.release_date?.slice(0, 4)}
+            </div>
+            <div className="details-rating">
+              <Star size={18} fill="#f39c12" stroke="#f39c12" />
+              {movie.vote_average.toFixed(1)} / 10
+            </div>
+          </div>
+        </div>
+
+        <p className="details-overview">{movie.overview}</p>
+      </div>
+    </>
   );
 };
 
