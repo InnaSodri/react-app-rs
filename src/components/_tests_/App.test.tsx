@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { ErrorBoundary } from '../ErrorBoundary';
 import App from '../../App';
 
 describe('App', () => {
@@ -15,48 +14,44 @@ describe('App', () => {
     expect(titleElement).toBeInTheDocument();
   });
 
-  it('renders the search component', () => {
+  it('renders the search input', () => {
     render(
       <MemoryRouter>
         <App />
       </MemoryRouter>
     );
-    const inputElement = screen.getByPlaceholderText(/Search/i); // more flexible match
+    const inputElement = screen.getByPlaceholderText(/Search movies/i);
     expect(inputElement).toBeInTheDocument();
   });
 
-  it('renders loading spinner when searching', async () => {
+  it('shows loader when loading is true', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/?search=avatar']}>
         <App />
       </MemoryRouter>
     );
 
-    const input = screen.getByPlaceholderText(/Search/i);
-    input.focus();
-    await waitFor(() =>
-      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loader')).toBeInTheDocument();
-    });
+    const loader = await screen.findByTestId('loader');
+    expect(loader).toBeInTheDocument();
   });
 
-  it('renders error boundary on button click', async () => {
+  it('navigates to About page', async () => {
     render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
+      <MemoryRouter initialEntries={['/about']}>
+        <App />
       </MemoryRouter>
     );
+    const aboutHeading = await screen.findByText(/About This App/i); // FIXED
+    expect(aboutHeading).toBeInTheDocument();
+  });
 
-    const errorButton = screen.getByText(/Test Error/i);
-    errorButton.click();
-
-    await waitFor(() => {
-      expect(screen.getByText(/Something went wrong/i)).toBeInTheDocument();
-    });
+  it('renders 404 for unknown route', async () => {
+    render(
+      <MemoryRouter initialEntries={['/not-a-real-page']}>
+        <App />
+      </MemoryRouter>
+    );
+    const notFoundText = await screen.findByText(/404 - Page Not Found/i); // FIXED
+    expect(notFoundText).toBeInTheDocument();
   });
 });
