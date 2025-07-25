@@ -25,7 +25,6 @@ export const App: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [shouldThrowError, setShouldThrowError] = useState(false);
 
   const isMounted = useRef(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,7 +33,7 @@ export const App: React.FC = () => {
   const detailsId = searchParams.get('details');
 
   useEffect(() => {
-    isMounted.current = true; // <-- Reset isMounted here on every effect run
+    isMounted.current = true;
 
     const fetchMovies = async (term: string, pageNum: number) => {
       setLoading(true);
@@ -69,7 +68,7 @@ export const App: React.FC = () => {
     fetchMovies(searchTerm, page);
 
     return () => {
-      isMounted.current = false; // <-- Set false on cleanup
+      isMounted.current = false;
     };
   }, [searchTerm, page]);
 
@@ -102,12 +101,6 @@ export const App: React.FC = () => {
       return params;
     });
   };
-
-  if (shouldThrowError) {
-    throw new Error(
-      'Test error thrown by user - Error Boundary should catch this!'
-    );
-  }
 
   return (
     <ErrorBoundary>
@@ -151,13 +144,6 @@ export const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="*" element={<p>404 - Page Not Found</p>} />
         </Routes>
-
-        <button
-          className="test-error-btn"
-          onClick={() => setShouldThrowError(true)}
-        >
-          Test Error
-        </button>
       </main>
     </ErrorBoundary>
   );
