@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -118,11 +118,7 @@
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
 <a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a>
-<a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L56'></a><a href='#L56'>56</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -139,15 +135,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,8 +173,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { Component } from 'react';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
 import { Calendar } from 'lucide-react';
 import './Card.css';
 &nbsp;
@@ -198,46 +190,42 @@ interface Props {
   movie: Movie;
 }
 &nbsp;
-export class Card extends Component&lt;Props&gt; {
-  getImageUrl(posterPath: string | null): string {
-    return posterPath
+const Card: React.FC&lt;Props&gt; = ({ movie }) =&gt; {
+  const getImageUrl = (posterPath: string | null): string =&gt;
+    posterPath
       ? `https://image.tmdb.org/t/p/w500${posterPath}`
       : 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&amp;w=1325&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0';
-  }
 &nbsp;
-  render() {
-    const { movie } = this.props;
-    const releaseYear = movie.release_date
-      ? new Date(movie.release_date).getFullYear()
-      : 'TBA';
+  const releaseYear = movie.release_date
+    ? new Date(movie.release_date).getFullYear()
+    : 'TBA';
 &nbsp;
-    return (
-      &lt;div className="card"&gt;
-        &lt;div className="card-image"&gt;
-          &lt;img
-            src={this.getImageUrl(movie.poster_path)}
-            alt={`Poster of ${movie.title}`}
-            loading="lazy"
-          /&gt;
-          &lt;span className="vote-badge"&gt;⭐ {movie.vote_average.toFixed(1)}&lt;/span&gt;
-        &lt;/div&gt;
+  return (
+    &lt;div className="card"&gt;
+      &lt;div className="card-image"&gt;
+        &lt;img
+          src={getImageUrl(movie.poster_path)}
+          alt={`Poster of ${movie.title}`}
+          loading="lazy"
+        /&gt;
+        &lt;span className="vote-badge"&gt;⭐ {movie.vote_average.toFixed(1)}&lt;/span&gt;
+      &lt;/div&gt;
 &nbsp;
-        &lt;div className="card-content"&gt;
-          &lt;h3 className="card-title"&gt;{movie.title}&lt;/h3&gt;
+      &lt;div className="card-content"&gt;
+        &lt;h3 className="card-title"&gt;{movie.title}&lt;/h3&gt;
 &nbsp;
-          &lt;p className="card-overview"&gt;
-            {movie.overview || 'No description available.'}
-          &lt;/p&gt;
+        &lt;p className="card-overview"&gt;
+          {movie.overview || 'No description available.'}
+        &lt;/p&gt;
 &nbsp;
-          &lt;div className="card-meta"&gt;
-            &lt;Calendar /&gt;
-            &lt;span className="release-year"&gt;{releaseYear}&lt;/span&gt;
-          &lt;/div&gt;
+        &lt;div className="card-meta"&gt;
+          &lt;Calendar /&gt;
+          &lt;span className="release-year"&gt;{releaseYear}&lt;/span&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-    );
-  }
-}
+    &lt;/div&gt;
+  );
+};
 &nbsp;
 export default Card;
 &nbsp;</pre></td></tr></table></pre>
@@ -247,7 +235,7 @@ export default Card;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-18T08:40:05.681Z
+                at 2025-07-24T20:05:05.640Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
