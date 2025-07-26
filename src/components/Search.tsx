@@ -28,7 +28,7 @@ export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
   const handleSearch = () => {
     const trimmedTerm = searchTerm.trim();
     if (trimmedTerm) {
-      setSearchTerm(trimmedTerm); // Optional: keeps localStorage clean
+      setSearchTerm(trimmedTerm);
       onSearch(trimmedTerm);
     }
   };

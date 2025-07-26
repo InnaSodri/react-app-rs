@@ -33,7 +33,7 @@ export const Results: React.FC<Props> = ({
   if (loading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
 
-  if (movies.length === 0) {
+  if (!movies || movies.length === 0) {
     return (
       <div className="results-empty">
         <p>No movies found.</p>
@@ -55,20 +55,22 @@ export const Results: React.FC<Props> = ({
   };
 
   return (
-    <div className="results-container">
-      <h2 className="results-title">Search Results ({movies.length})</h2>
-      <div className="results-scroller">
-        {movies.map((movie) => (
-          <div
-            key={movie.id}
-            className="results-item"
-            data-testid="movie-card"
-            onClick={() => onCardClick && onCardClick(movie.id)}
-            style={{ cursor: onCardClick ? 'pointer' : 'default' }}
-          >
-            <Card movie={movie} />
-          </div>
-        ))}
+    <>
+      <div className="results-container">
+        <h2 className="results-title">Search Results ({movies.length})</h2>
+        <div className="results-scroller" data-testid="results-list">
+          {movies.map((movie) => (
+            <div
+              key={movie.id}
+              className="results-item"
+              data-testid="movie-card"
+              onClick={() => onCardClick && onCardClick(movie.id)}
+              style={{ cursor: onCardClick ? 'pointer' : 'default' }}
+            >
+              <Card movie={movie} />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="pagination-controls" style={{ marginTop: '1rem' }}>
@@ -90,6 +92,6 @@ export const Results: React.FC<Props> = ({
           Next
         </button>
       </div>
-    </div>
+    </>
   );
 };

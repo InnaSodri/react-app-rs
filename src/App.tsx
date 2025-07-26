@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSearchParams, Routes, Route } from 'react-router-dom';
+import { useSearchParams, Routes, Route, useLocation } from 'react-router-dom';
 import { Film } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Search } from './components/Search';
@@ -28,11 +28,15 @@ export const App: React.FC = () => {
 
   const isMounted = useRef(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   const page = Number(searchParams.get('page')) || 1;
   const detailsId = searchParams.get('details');
 
   useEffect(() => {
+    if (!isHomePage) return;
+
     isMounted.current = true;
 
     const fetchMovies = async (term: string, pageNum: number) => {
@@ -47,8 +51,13 @@ export const App: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (data.results.length === 0 && term.trim()) {
-          throw new Error(`No movies found for "${term}"`);
+        if (!Array.isArray(data.results) || data.results.length === 0) {
+          if (term.trim()) {
+            throw new Error(`No movies found for "${term}"`);
+          } else {
+            setMovies([]);
+          }
+          return;
         }
         if (isMounted.current) setMovies(data.results);
       } catch (err: unknown) {
@@ -70,7 +79,7 @@ export const App: React.FC = () => {
     return () => {
       isMounted.current = false;
     };
-  }, [searchTerm, page]);
+  }, [searchTerm, page, isHomePage]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);

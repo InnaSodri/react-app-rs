@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './About.css'; // Assuming you will create a separate CSS file for styling
+import './About.css';
 
 export const About: React.FC = () => (
   <main className="about-container">

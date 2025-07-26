@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">89.47% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>15/17</span>
+                <span class='fraction'>17/19</span>
             </div>
         
             
@@ -158,7 +158,9 @@
 <a name='L93'></a><a href='#L93'>93</a>
 <a name='L94'></a><a href='#L94'>94</a>
 <a name='L95'></a><a href='#L95'>95</a>
-<a name='L96'></a><a href='#L96'>96</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -190,21 +192,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">31x</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -215,6 +211,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -224,6 +227,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -288,7 +292,7 @@ export const Results: React.FC&lt;Props&gt; = ({
   if (loading) return &lt;Loading /&gt;;
   if (error) return &lt;ErrorMessage message={error} /&gt;;
 &nbsp;
-  if (movies.length === 0) {
+  if (!movies || movies.length === 0) {
     return (
       &lt;div className="results-empty"&gt;
         &lt;p&gt;No movies found.&lt;/p&gt;
@@ -310,20 +314,22 @@ export const Results: React.FC&lt;Props&gt; = ({
   };
 &nbsp;
   return (
-    &lt;div className="results-container"&gt;
-      &lt;h2 className="results-title"&gt;Search Results ({movies.length})&lt;/h2&gt;
-      &lt;div className="results-scroller"&gt;
-        {movies.map((movie) =&gt; (
-          &lt;div
-            key={movie.id}
-            className="results-item"
-            data-testid="movie-card"
-            onClick={() =&gt; onCardClick &amp;&amp; onCardClick(movie.id)}
-            style={{ cursor: onCardClick ? 'pointer' : 'default' }}
-          &gt;
-            &lt;Card movie={movie} /&gt;
-          &lt;/div&gt;
-        ))}
+    &lt;&gt;
+      &lt;div className="results-container"&gt;
+        &lt;h2 className="results-title"&gt;Search Results ({movies.length})&lt;/h2&gt;
+        &lt;div className="results-scroller" data-testid="results-list"&gt;
+          {movies.map((movie) =&gt; (
+            &lt;div
+              key={movie.id}
+              className="results-item"
+              data-testid="movie-card"
+              onClick={() =&gt; onCardClick &amp;&amp; onCardClick(movie.id)}
+              style={{ cursor: onCardClick ? 'pointer' : 'default' }}
+            &gt;
+              &lt;Card movie={movie} /&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
       &lt;/div&gt;
 &nbsp;
       &lt;div className="pagination-controls" style={{ marginTop: '1rem' }}&gt;
@@ -345,7 +351,7 @@ export const Results: React.FC&lt;Props&gt; = ({
           Next
         &lt;/button&gt;
       &lt;/div&gt;
-    &lt;/div&gt;
+    &lt;/&gt;
   );
 };
 &nbsp;</pre></td></tr></table></pre>
@@ -355,7 +361,7 @@ export const Results: React.FC&lt;Props&gt; = ({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-26T08:34:34.714Z
+                at 2025-07-26T16:08:32.434Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
