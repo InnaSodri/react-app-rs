@@ -60,4 +60,16 @@ describe('Search', () => {
     expect(item).not.toBeNull();
     expect(JSON.parse(item as string)).toBe('Batman');
   });
+
+  it('does not call onSearch when input is empty and button is clicked', () => {
+    const onSearch = vi.fn();
+    render(<Search onSearch={onSearch} />);
+    const input = screen.getByPlaceholderText('Search movies...');
+    const button = screen.getByRole('button', { name: /search/i });
+
+    fireEvent.change(input, { target: { value: '   ' } }); // whitespace only
+    fireEvent.click(button);
+
+    expect(onSearch).not.toHaveBeenCalled();
+  });
 });
