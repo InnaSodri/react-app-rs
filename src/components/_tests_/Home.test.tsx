@@ -45,4 +45,27 @@ describe('Home', () => {
       expect(screen.getByText('Inception')).toBeInTheDocument();
     });
   });
+
+  // ✅ Add this test here:
+  it('shows no results when API returns empty results array', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ results: [] }),
+        })
+      )
+    );
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Home />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Inception')).not.toBeInTheDocument();
+    });
+  });
 });
