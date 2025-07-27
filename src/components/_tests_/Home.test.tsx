@@ -27,12 +27,10 @@ describe('Home', () => {
   it('renders movies from fetch', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ results: mockMovies }),
-        })
-      )
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: mockMovies }),
+      })
     );
 
     render(
@@ -46,16 +44,13 @@ describe('Home', () => {
     });
   });
 
-  // ✅ Add this test here:
   it('shows no results when API returns empty results array', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ results: [] }),
-        })
-      )
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: [] }),
+      })
     );
 
     render(
