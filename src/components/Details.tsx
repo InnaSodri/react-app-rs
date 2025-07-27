@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Star } from 'lucide-react';
 import { Movie } from '../types';
 import { Loading } from './Loading';
@@ -17,6 +17,7 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -40,14 +41,25 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
     fetchMovie();
   }, [movieId]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [onClose]);
+
   if (loading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
   if (!movie) return null;
 
   return (
     <>
-      <div className="details-overlay" onClick={onClose}></div>
-      <div className="details-panel">
+      <div className="details-overlay"></div>
+      <div className="details-panel" ref={panelRef}>
         <button
           className="close-button"
           onClick={onClose}
