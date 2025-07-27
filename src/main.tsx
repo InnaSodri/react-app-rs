@@ -1,21 +1,18 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+
 import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';
 
 const container = document.getElementById('root');
-if (!container) {
-  throw new Error('Root container missing in index.html');
-}
+if (!container) throw new Error('Root container missing in index.html');
 
 createRoot(container).render(
   <StrictMode>
     <ErrorBoundary>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ErrorBoundary>
   </StrictMode>
 );

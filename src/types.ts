@@ -3,6 +3,6 @@ export interface Movie {
   title: string;
   overview: string;
   poster_path: string | null;
-  release_date: string;
   vote_average: number;
+  release_date: string | null;
 }

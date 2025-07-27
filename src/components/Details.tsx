@@ -10,7 +10,7 @@ interface DetailsProps {
   onClose: () => void;
 }
 
-const API_KEY = import.meta.env.VITE_API_KEY;
+const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
 const BASE_URL = 'https://api.themoviedb.org/3/movie';
 
 const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {

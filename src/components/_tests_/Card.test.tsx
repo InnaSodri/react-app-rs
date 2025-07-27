@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Card from '../Card';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 const baseMovie = {
   id: 1,
@@ -40,5 +40,15 @@ describe('Card Component', () => {
   it('shows "TBA" if release_date is null', () => {
     render(<Card movie={{ ...baseMovie, release_date: null }} />);
     expect(screen.getByText('TBA')).toBeInTheDocument();
+  });
+
+  it('calls onClick handler when card is clicked', () => {
+    const handleClick = vi.fn();
+    render(<Card movie={baseMovie} onClick={handleClick} />);
+    const image = screen.getByRole('img', { name: 'Poster of Inception' });
+    const card = image.closest('.card');
+    expect(card).not.toBeNull();
+    if (card) fireEvent.click(card);
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });

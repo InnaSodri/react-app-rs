@@ -4,8 +4,16 @@ import { Results } from '../Results';
 
 vi.mock('../Card', () => ({
   __esModule: true,
-  default: ({ movie }: { movie: { title: string } }) => (
-    <div data-testid="card">{movie.title}</div>
+  default: ({
+    movie,
+    onClick,
+  }: {
+    movie: { title: string };
+    onClick: () => void;
+  }) => (
+    <div data-testid="card" onClick={onClick}>
+      {movie.title}
+    </div>
   ),
 }));
 
@@ -72,7 +80,7 @@ describe('Results', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('movie-card'));
+    fireEvent.click(screen.getByTestId('card'));
     expect(onCardClick).toHaveBeenCalledWith(1);
   });
 

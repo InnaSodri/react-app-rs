@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/main.tsx</title>
+    <title>Code coverage report for src/router.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,27 +19,27 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> main.tsx</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> router.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/4</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
+                <span class="quiet">Branches</span>
                 <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -81,9 +81,10 @@
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
-<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -92,6 +93,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -99,24 +101,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
-import { router } from './router';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createBrowserRouter } from 'react-router-dom';
+import App from './App';
+import { Home } from './components/Home';
+import { About } from './components/About';
 &nbsp;
-import { ErrorBoundary } from './components/ErrorBoundary';
-import './index.css';
-&nbsp;
-const container = <span class="cstat-no" title="statement not covered" >document.getElementById('root');</span>
-<span class="cstat-no" title="statement not covered" >if (!container) <span class="cstat-no" title="statement not covered" >throw new Error('Root container missing in index.html');</span></span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >createRoot(container).render(</span>
-  &lt;StrictMode&gt;
-    &lt;ErrorBoundary&gt;
-      &lt;RouterProvider router={router} /&gt;
-    &lt;/ErrorBoundary&gt;
-  &lt;/StrictMode&gt;
+// 404 fallback as a proper component (optional but cleaner)
+const NotFound = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; (</span></span>
+<span class="cstat-no" title="statement not covered" >  &lt;p style={{ padding: '2rem', textAlign: 'center' }}&gt;404 - Page Not Found&lt;/p&gt;</span>
 );
+&nbsp;
+export const router = <span class="cstat-no" title="statement not covered" >createBrowserRouter([</span>
+  {
+    path: '/',
+    element: &lt;App /&gt;, //
+    children: [
+      { index: true, element: &lt;Home /&gt; }, //
+      { path: 'about', element: &lt;About /&gt; },
+      { path: '*', element: &lt;NotFound /&gt; },
+    ],
+  },
+]);
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

@@ -2,16 +2,8 @@ import React from 'react';
 import Card from './Card';
 import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
+import { Movie } from '../types';
 import './Results.css';
-
-interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string | null;
-  release_date: string;
-  vote_average: number;
-}
 
 interface Props {
   movies: Movie[];
@@ -60,15 +52,11 @@ export const Results: React.FC<Props> = ({
         <h2 className="results-title">Search Results ({movies.length})</h2>
         <div className="results-scroller" data-testid="results-list">
           {movies.map((movie) => (
-            <div
+            <Card
               key={movie.id}
-              className="results-item"
-              data-testid="movie-card"
-              onClick={() => onCardClick && onCardClick(movie.id)}
-              style={{ cursor: onCardClick ? 'pointer' : 'default' }}
-            >
-              <Card movie={movie} />
-            </div>
+              movie={movie}
+              onClick={() => onCardClick?.(movie.id)}
+            />
           ))}
         </div>
       </div>

@@ -1,21 +1,14 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { Movie } from '../types';
 import './Card.css';
-
-interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string | null;
-  vote_average: number;
-  release_date: string | null;
-}
 
 interface Props {
   movie: Movie;
+  onClick?: () => void;
 }
 
-const Card: React.FC<Props> = ({ movie }) => {
+const Card: React.FC<Props> = ({ movie, onClick }) => {
   const getImageUrl = (posterPath: string | null): string =>
     posterPath
       ? `https://image.tmdb.org/t/p/w500${posterPath}`
@@ -26,23 +19,30 @@ const Card: React.FC<Props> = ({ movie }) => {
     : 'TBA';
 
   return (
-    <div className="card">
+    <div
+      className="card"
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+    >
       <div className="card-image">
         <img
           src={getImageUrl(movie.poster_path)}
           alt={`Poster of ${movie.title}`}
           loading="lazy"
         />
-        <span className="vote-badge">⭐ {movie.vote_average.toFixed(1)}</span>
+        <span className="vote-badge">
+          ⭐{' '}
+          {typeof movie.vote_average === 'number'
+            ? movie.vote_average.toFixed(1)
+            : 'N/A'}
+        </span>
       </div>
 
       <div className="card-content">
         <h3 className="card-title">{movie.title}</h3>
-
         <p className="card-overview">
           {movie.overview || 'No description available.'}
         </p>
-
         <div className="card-meta">
           <Calendar />
           <span className="release-year">{releaseYear}</span>
