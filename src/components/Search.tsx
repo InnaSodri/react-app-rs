@@ -1,35 +1,30 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import './Search.css';
+
+const STORAGE_KEY = 'movies-search-term';
 
 interface Props {
   onSearch: (term: string) => void;
   initialValue?: string;
 }
 
-export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
-  const STORAGE_KEY = 'movies-search-term';
-  const [searchTerm, setSearchTerm] = useLocalStorage<string>(
-    STORAGE_KEY,
-    initialValue || ''
-  );
+export const Search: React.FC<Props> = ({ onSearch, initialValue = '' }) => {
+  const [inputValue, setInputValue] = useState(initialValue);
 
   useEffect(() => {
-    if (searchTerm.trim()) {
-      onSearch(searchTerm.trim());
-    }
-  }, [searchTerm, onSearch]);
+    setInputValue(initialValue);
+  }, [initialValue]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    setInputValue(e.target.value);
   };
 
   const handleSearch = () => {
-    const trimmedTerm = searchTerm.trim();
-    if (trimmedTerm) {
-      setSearchTerm(trimmedTerm);
-      onSearch(trimmedTerm);
+    const trimmed = inputValue.trim();
+    if (trimmed) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+      onSearch(trimmed);
     }
   };
 
@@ -43,7 +38,7 @@ export const Search: React.FC<Props> = ({ onSearch, initialValue }) => {
     <div className="search-container">
       <input
         type="text"
-        value={searchTerm}
+        value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Search movies..."
