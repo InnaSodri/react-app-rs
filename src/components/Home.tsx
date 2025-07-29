@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  useSearchParams,
-  useLocation,
-  useNavigate,
-  Outlet,
-} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Movie } from '../types';
 import { Search } from './Search';
 import { Results } from './Results';
+import Details from './Details';
 import { useSavedSearchQuery } from '../hooks/useSavedSearchQuery';
 import './Home.css';
 
@@ -19,27 +15,13 @@ export const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const isMounted = useRef(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const isHomePage = location.pathname === '/';
-
+  const { page = '1', movieId } = useParams();
   const savedQuery = useSavedSearchQuery();
-  const queryParam = searchParams.get('query');
-  const query = queryParam || savedQuery;
-  const page = Number(searchParams.get('page')) || 1;
+  const [query, setQuery] = useState(savedQuery || '');
+  const pageNumber = Number(page);
 
   useEffect(() => {
-    if (!queryParam && savedQuery) {
-      const params = new URLSearchParams(searchParams);
-      params.set('query', savedQuery);
-      params.set('page', '1');
-      setSearchParams(params);
-    }
-  }, [queryParam, savedQuery, searchParams, setSearchParams]);
-
-  useEffect(() => {
-    if (!isHomePage) return;
     isMounted.current = true;
 
     const fetchMovies = async () => {
@@ -47,25 +29,25 @@ export const Home: React.FC = () => {
       setError(null);
       try {
         const url = query.trim()
-          ? `${BASE_URL}/search/movie?api_key=${import.meta.env.VITE_API_KEY}&query=${encodeURIComponent(
-              query
-            )}&page=${page}`
-          : `${BASE_URL}/movie/popular?api_key=${import.meta.env.VITE_API_KEY}&page=${page}`;
+          ? `${BASE_URL}/search/movie?api_key=${import.meta.env.VITE_API_KEY}&query=${encodeURIComponent(query)}&page=${pageNumber}`
+          : `${BASE_URL}/movie/popular?api_key=${import.meta.env.VITE_API_KEY}&page=${pageNumber}`;
+
         const response = await fetch(url);
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
+
         const data = await response.json();
-        if (!Array.isArray(data.results) || data.results.length === 0) {
-          if (query.trim()) throw new Error(`No movies found for "${query}"`);
-          else setMovies([]);
-          return;
+        if (!Array.isArray(data.results)) {
+          throw new Error('Unexpected API response format.');
         }
+
         if (isMounted.current) setMovies(data.results);
       } catch (err: unknown) {
         if (isMounted.current) {
-          if (err instanceof Error) setError(err.message);
-          else setError('An unexpected error occurred');
           setMovies([]);
+          setError(
+            err instanceof Error ? err.message : 'An unexpected error occurred'
+          );
         }
       } finally {
         if (isMounted.current) setLoading(false);
@@ -73,27 +55,27 @@ export const Home: React.FC = () => {
     };
 
     fetchMovies();
-
     return () => {
       isMounted.current = false;
     };
-  }, [query, page, isHomePage]);
+  }, [query, pageNumber]);
 
   const handleSearch = (term: string) => {
-    const params = new URLSearchParams();
-    params.set('query', term);
-    params.set('page', '1');
-    setSearchParams(params);
+    setQuery(term);
+    localStorage.setItem('movies-search-term', JSON.stringify(term));
+    navigate(`/1`);
   };
 
   const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', newPage.toString());
-    setSearchParams(params);
+    navigate(`/${newPage}${movieId ? `/${movieId}` : ''}`);
   };
 
   const openDetails = (id: number) => {
-    navigate(`/details/${id}${location.search}`);
+    navigate(`/${pageNumber}/${id}`);
+  };
+
+  const closeDetails = () => {
+    navigate(`/${pageNumber}`);
   };
 
   return (
@@ -105,10 +87,16 @@ export const Home: React.FC = () => {
           loading={loading}
           error={error}
           onCardClick={openDetails}
-          currentPage={page}
+          currentPage={pageNumber}
           onPageChange={handlePageChange}
         />
-        <Outlet />
+        {movieId && (
+          <Details
+            key={movieId}
+            movieId={Number(movieId)}
+            onClose={closeDetails}
+          />
+        )}
       </div>
     </>
   );

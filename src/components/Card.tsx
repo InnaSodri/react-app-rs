@@ -21,7 +21,10 @@ const Card: React.FC<Props> = ({ movie, onClick }) => {
   return (
     <div
       className="card"
-      onClick={onClick}
+      onClick={() => {
+        console.log('Clicked movie:', movie.id);
+        onClick?.();
+      }}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
       <div className="card-image">

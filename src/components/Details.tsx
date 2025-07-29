@@ -19,9 +19,12 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMovie(null);
+    setError(null);
+    setLoading(true);
+
     const fetchMovie = async () => {
       try {
-        setLoading(true);
         const res = await fetch(
           `${BASE_URL}/${movieId}?api_key=${import.meta.env.VITE_API_KEY}`
         );

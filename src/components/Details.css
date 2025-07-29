@@ -1,53 +1,48 @@
 .details-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  display: none;
 }
 
 .details-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 320px;
-  max-width: 90vw;
-  height: 100vh;
+  flex: 1;
+  max-width: 420px;
+  min-width: 280px;
   background-color: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-  padding: 1.5rem;
-  z-index: 1000;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  padding: 1.75rem;
   overflow-y: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  opacity: 1;
-  visibility: visible;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  color: #2c3e50;
+  transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.4rem;
   scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  scrollbar-color: #bbb transparent;
+  position: sticky;
+  top: 1rem;
+  height: fit-content;
+  z-index: 2;
 }
 
 .details-panel::-webkit-scrollbar {
   width: 6px;
 }
 .details-panel::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: #bbb;
   border-radius: 3px;
 }
 
 .details-header {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: flex-start;
 }
 
 .details-poster {
-  width: 100px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 110px;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
 }
 
@@ -56,45 +51,45 @@
 }
 
 .details-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1f2937;
   margin: 0;
 }
 
 .details-meta {
-  font-size: 0.95rem;
-  color: #777;
-  margin-top: 0.4rem;
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
 }
 
 .details-rating {
   display: flex;
   align-items: center;
   font-size: 1rem;
-  color: #f39c12;
-  margin-top: 0.4rem;
+  color: #f59e0b;
+  margin-top: 0.5rem;
 }
 
 .details-rating svg {
-  margin-right: 0.3rem;
+  margin-right: 0.4rem;
 }
 
 .details-overview {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #555;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+  margin-top: 0.8rem;
 }
 
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #ff6f61;
+  top: 12px;
+  right: 12px;
+  background: #ef4444;
   border: none;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   font-size: 1.2rem;
   font-weight: bold;
@@ -104,20 +99,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  z-index: 10;
 }
 
 .close-button:hover {
-  background-color: #e74c3c;
+  background-color: #dc2626;
   transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.3);
 }
 
 @media (max-width: 768px) {
   .details-panel {
-    width: 95%;
+    width: 100%;
     padding: 1rem;
-    max-height: 85vh;
+    position: static;
   }
 
   .details-header {
@@ -127,17 +123,17 @@
   }
 
   .details-poster {
-    width: 80px;
+    width: 90px;
   }
 
   .details-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
   .details-meta,
   .details-rating,
   .details-overview {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .close-button {
