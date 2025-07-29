@@ -12,12 +12,17 @@
   min-height: 80vh;
 }
 
-.results-container {
+.results-full {
+  flex: 1;
+  width: 100%;
+}
+
+.results-half {
   flex: 2;
   min-width: 0;
 }
 
-.details-panel {
+.details-pane {
   flex: 1;
   max-width: 420px;
   min-width: 300px;
@@ -41,7 +46,12 @@
     flex-direction: column;
   }
 
-  .details-panel {
+  .results-half,
+  .results-full {
+    width: 100%;
+  }
+
+  .details-pane {
     position: static;
     max-width: 100%;
     width: 100%;

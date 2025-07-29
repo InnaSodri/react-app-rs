@@ -82,17 +82,20 @@ export const Home: React.FC = () => {
     <>
       <Search onSearch={handleSearch} initialValue={query} />
       <div className="master-detail-layout">
-        <Results
-          movies={movies}
-          loading={loading}
-          error={error}
-          onCardClick={openDetails}
-          currentPage={pageNumber}
-          onPageChange={handlePageChange}
-        />
-        {typeof movieId !== 'undefined' && (
-          <div key={movieId}>
+        <div className={movieId ? 'results-half' : 'results-full'}>
+          <Results
+            movies={movies}
+            loading={loading}
+            error={error}
+            onCardClick={openDetails}
+            currentPage={pageNumber}
+            onPageChange={handlePageChange}
+          />
+        </div>
+        {movieId && (
+          <div className="details-pane">
             <LazyDetailsWrapper
+              key={movieId}
               movieId={Number(movieId)}
               onClose={closeDetails}
             />
