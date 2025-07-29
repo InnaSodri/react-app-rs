@@ -1,28 +1,44 @@
 .details-overlay {
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .details-panel {
-  flex: 1;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
   max-width: 420px;
-  min-width: 300px;
   background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 16px 0 0 16px;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
   padding: 1.75rem;
   overflow-y: auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c3e50;
-  transition: all 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: 1.2rem;
   scrollbar-width: thin;
   scrollbar-color: #bbb transparent;
-  position: sticky;
-  top: 1rem;
-  height: fit-content;
   z-index: 2;
+  animation: slideIn 0.3s ease-out;
 }
 
 .details-panel::-webkit-scrollbar {
@@ -35,12 +51,15 @@
 
 .details-header {
   display: flex;
-  gap: 1.2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: flex-start;
 }
 
 .details-poster {
-  width: 110px;
+  width: 100px;
+  height: auto;
+  object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
@@ -48,27 +67,30 @@
 
 .details-info {
   flex: 1;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .details-title {
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
+  line-height: 1.4;
 }
 
 .details-meta {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #6b7280;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .details-rating {
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #f59e0b;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .details-rating svg {
@@ -76,10 +98,12 @@
 }
 
 .details-overview {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: #374151;
-  margin-top: 0.8rem;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .close-button {
@@ -111,10 +135,15 @@
 
 @media (max-width: 768px) {
   .details-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
     padding: 1rem;
-    position: static;
+    animation: slideIn 0.3s ease-out;
   }
 
   .details-header {
@@ -124,17 +153,17 @@
   }
 
   .details-poster {
-    width: 90px;
+    width: 80px;
   }
 
   .details-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .details-meta,
   .details-rating,
   .details-overview {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .close-button {
