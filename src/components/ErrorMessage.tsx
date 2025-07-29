@@ -4,13 +4,11 @@ interface Props {
   message: string;
 }
 
-export class ErrorMessage extends React.Component<Props> {
-  render() {
-    return (
-      <div>
-        <h3>Error</h3>
-        <p>{this.props.message}</p>
-      </div>
-    );
-  }
-}
+const ErrorMessage: React.FC<Props> = ({ message }) => (
+  <div>
+    <h3>Error</h3>
+    <p>{message}</p>
+  </div>
+);
+
+export default ErrorMessage;

@@ -1,12 +1,19 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Results } from '../Results';
 
 vi.mock('../Card', () => ({
   __esModule: true,
-  default: ({ movie }: { movie: { title: string } }) => (
-    <div data-testid="card">{movie.title}</div>
+  default: ({
+    movie,
+    onClick,
+  }: {
+    movie: { title: string };
+    onClick: () => void;
+  }) => (
+    <div data-testid="card" onClick={onClick}>
+      {movie.title}
+    </div>
   ),
 }));
 
@@ -15,7 +22,7 @@ vi.mock('../Loading', () => ({
 }));
 
 vi.mock('../ErrorMessage', () => ({
-  ErrorMessage: ({ message }: { message: string }) => (
+  default: ({ message }: { message: string }) => (
     <div data-testid="error">Error: {message}</div>
   ),
 }));
@@ -47,10 +54,75 @@ describe('Results', () => {
     expect(screen.getByText('No movies found.')).toBeInTheDocument();
   });
 
+  it('shows full empty state message', () => {
+    render(<Results movies={[]} loading={false} error={null} />);
+    expect(screen.getByText('No movies found.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Try searching for a different movie title.')
+    ).toBeInTheDocument();
+  });
+
   it('shows movie cards', () => {
     render(<Results movies={movies} loading={false} error={null} />);
     expect(screen.getByText('Search Results (1)')).toBeInTheDocument();
     expect(screen.getAllByTestId('card')).toHaveLength(1);
     expect(screen.getByText('The Matrix')).toBeInTheDocument();
+  });
+
+  it('calls onCardClick when a movie card is clicked', () => {
+    const onCardClick = vi.fn();
+    render(
+      <Results
+        movies={movies}
+        loading={false}
+        error={null}
+        onCardClick={onCardClick}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('card'));
+    expect(onCardClick).toHaveBeenCalledWith(1);
+  });
+
+  it('calls onPageChange when "Next" is clicked', () => {
+    const onPageChange = vi.fn();
+    render(
+      <Results
+        movies={movies}
+        loading={false}
+        error={null}
+        currentPage={1}
+        onPageChange={onPageChange}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('next-page'));
+    expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('disables "Previous" button on first page', () => {
+    render(
+      <Results movies={movies} loading={false} error={null} currentPage={1} />
+    );
+
+    const prevButton = screen.getByRole('button', { name: /previous page/i });
+    expect(prevButton).toBeDisabled();
+  });
+
+  it('calls onPageChange when "Previous" is clicked', () => {
+    const onPageChange = vi.fn();
+    render(
+      <Results
+        movies={movies}
+        loading={false}
+        error={null}
+        currentPage={2}
+        onPageChange={onPageChange}
+      />
+    );
+
+    const prevButton = screen.getByRole('button', { name: /previous page/i });
+    fireEvent.click(prevButton);
+    expect(onPageChange).toHaveBeenCalledWith(1);
   });
 });

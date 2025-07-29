@@ -1,3 +1,15 @@
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .search-container {
   display: flex;
   max-width: 900px;
@@ -49,5 +61,6 @@
 .search-icon {
   width: 24px;
   height: 24px;
+  stroke: currentColor; /* Ensure icon color follows text color */
   color: #1e293b;
 }

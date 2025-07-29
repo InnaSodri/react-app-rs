@@ -1,11 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-export class Loading extends Component {
-  render() {
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
-}
+export const Loading: React.FC = () => (
+  <div data-testid="loader">
+    <p>Loading...</p>
+  </div>
+);
