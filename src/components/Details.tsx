@@ -58,8 +58,14 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
       }
     };
 
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
+    const timer = setTimeout(() => {
+      window.addEventListener('click', handleClickOutside);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleClickOutside);
+    };
   }, [onClose]);
 
   return (

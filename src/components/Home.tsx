@@ -90,12 +90,13 @@ export const Home: React.FC = () => {
           currentPage={pageNumber}
           onPageChange={handlePageChange}
         />
-        {movieId && (
-          <LazyDetailsWrapper
-            key={movieId} // ✅ forces remount when ID changes
-            movieId={Number(movieId)}
-            onClose={closeDetails}
-          />
+        {typeof movieId !== 'undefined' && (
+          <div key={movieId}>
+            <LazyDetailsWrapper
+              movieId={Number(movieId)}
+              onClose={closeDetails}
+            />
+          </div>
         )}
       </div>
     </>
