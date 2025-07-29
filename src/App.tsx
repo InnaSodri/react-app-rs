@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { Film } from 'lucide-react';
 import './App.css';
 
@@ -14,6 +14,11 @@ export const App = () => {
           Search for your favorite movies or browse popular titles — built with
           React Functional Components and TheMovieDB API
         </p>
+        <nav>
+          <Link to="/about" className="about-link">
+            About
+          </Link>
+        </nav>
       </header>
 
       <Outlet />

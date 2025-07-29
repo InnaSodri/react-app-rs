@@ -10,7 +10,6 @@ interface DetailsProps {
   onClose: () => void;
 }
 
-const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
 const BASE_URL = 'https://api.themoviedb.org/3/movie';
 
 const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
@@ -23,7 +22,9 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
     const fetchMovie = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${BASE_URL}/${movieId}?api_key=${API_KEY}`);
+        const res = await fetch(
+          `${BASE_URL}/${movieId}?api_key=${import.meta.env.VITE_API_KEY}`
+        );
         if (!res.ok) throw new Error('Failed to fetch movie details.');
         const data = await res.json();
         setMovie(data);

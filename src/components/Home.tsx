@@ -11,7 +11,6 @@ import { Results } from './Results';
 import { useSavedSearchQuery } from '../hooks/useSavedSearchQuery';
 import './Home.css';
 
-const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 export const Home: React.FC = () => {
@@ -37,7 +36,7 @@ export const Home: React.FC = () => {
       params.set('page', '1');
       setSearchParams(params);
     }
-  }, [savedQuery]);
+  }, [queryParam, savedQuery, searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!isHomePage) return;
@@ -48,10 +47,10 @@ export const Home: React.FC = () => {
       setError(null);
       try {
         const url = query.trim()
-          ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
+          ? `${BASE_URL}/search/movie?api_key=${import.meta.env.VITE_API_KEY}&query=${encodeURIComponent(
               query
             )}&page=${page}`
-          : `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`;
+          : `${BASE_URL}/movie/popular?api_key=${import.meta.env.VITE_API_KEY}&page=${page}`;
         const response = await fetch(url);
         if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
