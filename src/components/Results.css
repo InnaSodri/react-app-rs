@@ -9,15 +9,25 @@
   color: #c7d1e0;
 }
 
+.results-item {
+  background-color: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.results-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
 .results-scroller {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   padding-bottom: 1rem;
   overflow-x: visible;
-}
-
-.results-item {
 }
 
 .results-empty {

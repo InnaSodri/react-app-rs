@@ -24,8 +24,7 @@ export const Results: React.FC<Props> = ({
 }) => {
   if (loading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
-
-  if (!movies || movies.length === 0) {
+  if (!movies.length) {
     return (
       <div className="results-empty">
         <p>No movies found.</p>
@@ -33,18 +32,6 @@ export const Results: React.FC<Props> = ({
       </div>
     );
   }
-
-  const handlePrev = () => {
-    if (onPageChange && currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (onPageChange) {
-      onPageChange(currentPage + 1);
-    }
-  };
 
   return (
     <>
@@ -63,7 +50,7 @@ export const Results: React.FC<Props> = ({
 
       <div className="pagination-controls" style={{ marginTop: '1rem' }}>
         <button
-          onClick={handlePrev}
+          onClick={() => onPageChange?.(currentPage - 1)}
           disabled={currentPage <= 1}
           className="pagination-btn"
           aria-label="Previous Page"
@@ -72,7 +59,7 @@ export const Results: React.FC<Props> = ({
         </button>
         <span style={{ margin: '0 1rem' }}>Page {currentPage}</span>
         <button
-          onClick={handleNext}
+          onClick={() => onPageChange?.(currentPage + 1)}
           className="pagination-btn"
           aria-label="Next Page"
           data-testid="next-page"

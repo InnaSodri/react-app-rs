@@ -5,7 +5,7 @@ import './Card.css';
 
 interface Props {
   movie: Movie;
-  onClick?: () => void;
+  onClick?: (id: number) => void;
 }
 
 const Card: React.FC<Props> = ({ movie, onClick }) => {
@@ -21,11 +21,8 @@ const Card: React.FC<Props> = ({ movie, onClick }) => {
   return (
     <div
       className="card"
-      onClick={() => {
-        console.log('Clicked movie:', movie.id);
-        onClick?.();
-      }}
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      onClick={() => onClick?.(movie.id)}
+      data-testid="card"
     >
       <div className="card-image">
         <img

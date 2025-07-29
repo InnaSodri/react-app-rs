@@ -5,7 +5,7 @@ import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
 import './Details.css';
 
-interface DetailsProps {
+export interface DetailsProps {
   movieId: number;
   onClose: () => void;
 }
@@ -19,6 +19,8 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let isActive = true;
+
     setMovie(null);
     setError(null);
     setLoading(true);
@@ -30,19 +32,23 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
         );
         if (!res.ok) throw new Error('Failed to fetch movie details.');
         const data = await res.json();
-        setMovie(data);
+        if (isActive) setMovie(data);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
+        if (isActive) {
+          setError(
+            err instanceof Error ? err.message : 'An unknown error occurred'
+          );
         }
       } finally {
-        setLoading(false);
+        if (isActive) setLoading(false);
       }
     };
 
     fetchMovie();
+
+    return () => {
+      isActive = false;
+    };
   }, [movieId]);
 
   useEffect(() => {

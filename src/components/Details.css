@@ -5,7 +5,7 @@
 .details-panel {
   flex: 1;
   max-width: 420px;
-  min-width: 280px;
+  min-width: 300px;
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
@@ -112,6 +112,7 @@
 @media (max-width: 768px) {
   .details-panel {
     width: 100%;
+    max-width: 100%;
     padding: 1rem;
     position: static;
   }

@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Movie } from '../types';
 import { Search } from './Search';
 import { Results } from './Results';
-import Details from './Details';
 import { useSavedSearchQuery } from '../hooks/useSavedSearchQuery';
+import LazyDetailsWrapper from './LazyDetailsWrapper';
 import './Home.css';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -91,8 +91,8 @@ export const Home: React.FC = () => {
           onPageChange={handlePageChange}
         />
         {movieId && (
-          <Details
-            key={movieId}
+          <LazyDetailsWrapper
+            key={movieId} // ✅ forces remount when ID changes
             movieId={Number(movieId)}
             onClose={closeDetails}
           />
