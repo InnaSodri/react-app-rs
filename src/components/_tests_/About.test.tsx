@@ -34,7 +34,7 @@ describe('About Page', () => {
 
     expect(
       screen.getByRole('link', { name: /RS School React course/i })
-    ).toHaveAttribute('href', 'https://rs.school/react/');
+    ).toHaveAttribute('href', 'https://rs.school/courses/reactjs');
 
     expect(screen.getByRole('link', { name: /Back to Home/i })).toHaveAttribute(
       'href',

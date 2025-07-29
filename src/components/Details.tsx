@@ -52,10 +52,6 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
     return () => window.removeEventListener('click', handleClickOutside);
   }, [onClose]);
 
-  if (loading) return <Loading />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!movie) return null;
-
   return (
     <>
       <div className="details-overlay"></div>
@@ -68,27 +64,33 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
           ✖
         </button>
 
-        <div className="details-header">
-          {movie.poster_path && (
-            <img
-              src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-              alt={movie.title}
-              className="details-poster"
-            />
-          )}
-          <div className="details-info">
-            <h2 className="details-title">{movie.title}</h2>
-            <div className="details-meta">
-              <strong>Year:</strong> {movie.release_date?.slice(0, 4)}
+        {loading && <Loading />}
+        {error && !loading && <ErrorMessage message={error} />}
+        {!loading && !error && movie && (
+          <>
+            <div className="details-header">
+              {movie.poster_path && (
+                <img
+                  src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                  alt={movie.title}
+                  className="details-poster"
+                />
+              )}
+              <div className="details-info">
+                <h2 className="details-title">{movie.title}</h2>
+                <div className="details-meta">
+                  <strong>Year:</strong> {movie.release_date?.slice(0, 4)}
+                </div>
+                <div className="details-rating">
+                  <Star size={18} fill="#f39c12" stroke="#f39c12" />
+                  {movie.vote_average.toFixed(1)} / 10
+                </div>
+              </div>
             </div>
-            <div className="details-rating">
-              <Star size={18} fill="#f39c12" stroke="#f39c12" />
-              {movie.vote_average.toFixed(1)} / 10
-            </div>
-          </div>
-        </div>
 
-        <p className="details-overview">{movie.overview}</p>
+            <p className="details-overview">{movie.overview}</p>
+          </>
+        )}
       </div>
     </>
   );

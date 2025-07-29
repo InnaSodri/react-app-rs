@@ -23,7 +23,11 @@ export const About: React.FC = () => (
       </p>
       <p>
         This project is made as part of the{' '}
-        <a href="https://rs.school/react/" target="_blank" rel="noreferrer">
+        <a
+          href="https://rs.school/courses/reactjs"
+          target="_blank"
+          rel="noreferrer"
+        >
           RS School React course
         </a>
         .

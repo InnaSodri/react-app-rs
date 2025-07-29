@@ -1,11 +1,17 @@
+.details-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
 .details-panel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  width: 90%;
-  max-width: 420px;
-  max-height: 90vh;
+  top: 0;
+  left: 0;
+  width: 320px;
+  max-width: 90vw;
+  height: 100vh;
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
@@ -24,7 +30,6 @@
   scrollbar-color: #ccc transparent;
 }
 
-/* Optional: Webkit scrollbar styling */
 .details-panel::-webkit-scrollbar {
   width: 6px;
 }

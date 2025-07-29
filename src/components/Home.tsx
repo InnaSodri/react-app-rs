@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import {
+  useSearchParams,
+  useLocation,
+  useNavigate,
+  Outlet,
+} from 'react-router-dom';
 import { Movie } from '../types';
 import { Search } from './Search';
 import { Results } from './Results';
-import Details from './Details';
+import { useSavedSearchQuery } from '../hooks/useSavedSearchQuery';
 import './Home.css';
 
 const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
@@ -17,11 +22,22 @@ export const Home: React.FC = () => {
   const isMounted = useRef(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
 
-  const query = searchParams.get('query') || '';
+  const savedQuery = useSavedSearchQuery();
+  const queryParam = searchParams.get('query');
+  const query = queryParam || savedQuery;
   const page = Number(searchParams.get('page')) || 1;
-  const detailsId = searchParams.get('details');
+
+  useEffect(() => {
+    if (!queryParam && savedQuery) {
+      const params = new URLSearchParams(searchParams);
+      params.set('query', savedQuery);
+      params.set('page', '1');
+      setSearchParams(params);
+    }
+  }, [savedQuery]);
 
   useEffect(() => {
     if (!isHomePage) return;
@@ -32,7 +48,9 @@ export const Home: React.FC = () => {
       setError(null);
       try {
         const url = query.trim()
-          ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`
+          ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
+              query
+            )}&page=${page}`
           : `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`;
         const response = await fetch(url);
         if (!response.ok)
@@ -76,15 +94,7 @@ export const Home: React.FC = () => {
   };
 
   const openDetails = (id: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('details', id.toString());
-    setSearchParams(params);
-  };
-
-  const closeDetails = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete('details');
-    setSearchParams(params);
+    navigate(`/details/${id}${location.search}`);
   };
 
   return (
@@ -99,9 +109,7 @@ export const Home: React.FC = () => {
           currentPage={page}
           onPageChange={handlePageChange}
         />
-        {detailsId && (
-          <Details movieId={Number(detailsId)} onClose={closeDetails} />
-        )}
+        <Outlet />
       </div>
     </>
   );
