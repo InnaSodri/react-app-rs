@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '../../test-utils';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../../App';
 import { TestProviders } from '../../utils/TestProviders';
@@ -34,5 +34,26 @@ describe('App component', () => {
     );
 
     expect(document.querySelector('.app-container')).toBeInTheDocument();
+  });
+
+  it('toggles between light and dark themes', () => {
+    render(
+      <TestProviders>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestProviders>
+    );
+
+    const toggleButton = screen.getByRole('button', {
+      name: /switch to dark mode/i,
+    });
+    expect(toggleButton).toBeInTheDocument();
+
+    fireEvent.click(toggleButton);
+
+    expect(
+      screen.getByRole('button', { name: /switch to light mode/i })
+    ).toBeInTheDocument();
   });
 });
