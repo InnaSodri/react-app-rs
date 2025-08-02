@@ -1,43 +1,51 @@
 .flyout {
   position: fixed;
-  bottom: 1.25rem;
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
   background-color: var(--flyout-bg);
-  color: var(--text);
-  padding: 0.75rem 1.5rem;
+  color: var(--flyout-text);
+  padding: 0.75rem 1.25rem;
   border-radius: 1rem;
   display: flex;
-  gap: 1.25rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   font-size: 0.95rem;
+  max-width: 95%;
   animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(6px);
 }
 
 .flyout span {
   font-weight: 500;
+  flex: 1 1 100%;
+  text-align: center;
 }
 
 .flyout-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  justify-content: center;
+  flex: 1 1 100%;
 }
 
 .flyout-buttons button {
-  padding: 0.4rem 1rem;
-  background-color: #2d88ff;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--btn-bg);
   border: none;
-  border-radius: 6px;
-  color: white;
+  border-radius: 0.5rem;
+  color: var(--btn-text);
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .flyout-buttons button:hover {
-  background-color: #1a6ce0;
+  background-color: var(--btn-bg-hover);
 }
 
 @keyframes fadeIn {
@@ -48,5 +56,28 @@
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .flyout {
+    flex-direction: column;
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .flyout-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .flyout-buttons button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+
+  .flyout-buttons button:hover {
+    background-color: var(--btn-bg-hover);
   }
 }

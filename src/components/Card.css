@@ -115,4 +115,49 @@
 
 .card-checkbox input[type="checkbox"] {
   accent-color: #3b82f6;
-}
+
+
+  @media screen and (max-width: 600px) {
+    .card {
+      border-radius: 0.75rem;
+      flex-direction: column;
+      margin: 0.5rem;
+    }
+  
+    .card-image {
+      aspect-ratio: 3 / 4;
+    }
+  
+    .card-content {
+      padding: 0.75rem;
+    }
+  
+    .card-title {
+      font-size: 1.1rem;
+    }
+  
+    .card-overview {
+      font-size: 0.8rem;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+    }
+  
+    .card-meta {
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+  
+    .release-year {
+      font-size: 0.85rem;
+    }
+  
+    .card-checkbox {
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+  
+    .vote-badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
+    }
+  }}

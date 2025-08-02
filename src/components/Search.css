@@ -63,3 +63,32 @@
   stroke: currentColor;
   color: #1e293b;
 }
+
+@media screen and (max-width: 600px) {
+  .search-container {
+    flex-direction: column;
+    margin: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+  }
+
+  .search-input {
+    padding: 1rem;
+    font-size: 1.1rem;
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .search-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+  }
+
+  .search-icon {
+    width: 20px;
+    height: 20px;
+  }
+}

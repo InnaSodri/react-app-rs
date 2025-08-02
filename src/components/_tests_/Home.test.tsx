@@ -214,7 +214,7 @@ describe('Home', () => {
     fireEvent.click(screen.getByText('Inception'));
 
     await screen.findByLabelText(/close/i);
-    fireEvent.click(screen.getByLabelText(/close/i));
+    fireEvent.click(screen.getByLabelText('Close details panel'));
 
     expect(screen.getByText('Inception')).toBeInTheDocument();
   });
