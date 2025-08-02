@@ -25,8 +25,6 @@ const Card: React.FC<Props> = ({ movie, onClick }) => {
       detailsUrl: `https://www.themoviedb.org/movie/${movie.id}`,
     };
 
-    console.log('🔥 Dispatching toggleItem with:', payload); // ✅ Debug output
-
     dispatch(toggleItem(payload));
   };
 

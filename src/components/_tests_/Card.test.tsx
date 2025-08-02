@@ -2,6 +2,10 @@ import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { customRender as render } from '../../test-utils';
 import Card from '../Card';
+import { configureStore } from '@reduxjs/toolkit';
+import selectedItemsReducer from '../../features/selectedItems/selectedItemsSlice';
+import { Provider } from 'react-redux';
+import { ThemeProvider } from '../../contexts/ThemeContext';
 
 const baseMovie = {
   id: 1,
@@ -50,5 +54,67 @@ describe('Card Component', () => {
     const card = image.closest('.card');
     if (card) fireEvent.click(card);
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('dispatches toggleItem when checkbox is toggled', () => {
+    const { store } = render(<Card movie={baseMovie} />);
+    const checkbox = screen.getByRole('checkbox');
+    fireEvent.click(checkbox);
+    const state = store.getState().selectedItems.items;
+    expect(state).toHaveProperty('1');
+  });
+
+  it('renders checkbox as checked if movie is already selected', () => {
+    const store = configureStore({
+      reducer: {
+        selectedItems: selectedItemsReducer,
+      },
+      preloadedState: {
+        selectedItems: {
+          items: {
+            '1': {
+              id: '1',
+              name: 'Inception',
+              description: 'Dreams within dreams.',
+              detailsUrl: 'https://www.themoviedb.org/movie/1',
+            },
+          },
+        },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <ThemeProvider>
+          <Card movie={baseMovie} />
+        </ThemeProvider>
+      </Provider>
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeChecked();
+  });
+  it('renders checkbox as unchecked when item is not selected', () => {
+    const store = configureStore({
+      reducer: {
+        selectedItems: selectedItemsReducer,
+      },
+      preloadedState: {
+        selectedItems: {
+          items: {},
+        },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <ThemeProvider>
+          <Card movie={baseMovie} />
+        </ThemeProvider>
+      </Provider>
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).not.toBeChecked();
   });
 });
