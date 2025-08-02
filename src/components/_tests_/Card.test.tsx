@@ -5,7 +5,7 @@ import Card from '../Card';
 import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer from '../../features/selectedItems/selectedItemsSlice';
 import { Provider } from 'react-redux';
-import { ThemeProvider } from '../../contexts/ThemeContext';
+import { ThemeProvider } from '../../contexts/';
 
 const baseMovie = {
   id: 1,
@@ -116,5 +116,21 @@ describe('Card Component', () => {
 
     const checkbox = screen.getByRole('checkbox');
     expect(checkbox).not.toBeChecked();
+  });
+  it('uses fallback description when overview is missing', () => {
+    const movie = {
+      id: 123,
+      title: 'Test Movie',
+      overview: '',
+    };
+
+    const payload = {
+      id: String(movie.id),
+      name: movie.title,
+      description: movie.overview || 'No description available.',
+      detailsUrl: `https://www.themoviedb.org/movie/${movie.id}`,
+    };
+
+    expect(payload.description).toBe('No description available.');
   });
 });

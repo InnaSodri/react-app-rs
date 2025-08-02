@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { router } from './router';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider } from '../src/contexts';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';

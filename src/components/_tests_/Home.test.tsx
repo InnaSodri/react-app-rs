@@ -213,10 +213,9 @@ describe('Home', () => {
     await screen.findByText('Inception');
     fireEvent.click(screen.getByText('Inception'));
 
-    await screen.findByLabelText(/close/i);
-    fireEvent.click(screen.getByLabelText('Close details panel'));
-
-    expect(screen.getByText('Inception')).toBeInTheDocument();
+    const closeButton = await screen.findByLabelText(/close details panel/i);
+    fireEvent.click(closeButton);
+    expect(await screen.findByText(/inception/i)).toBeInTheDocument();
   });
 
   it('resets search when empty string is submitted', async () => {

@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeProvider';
 
 const AllProviders = ({ children }: { children: ReactNode }) => (
   <Provider store={store}>

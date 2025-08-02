@@ -99,7 +99,9 @@ const Details: React.FC<DetailsProps> = ({ movieId, onClose }) => {
                 </div>
                 <div className="details-rating">
                   <Star size={18} fill="#f39c12" stroke="#f39c12" />
-                  {movie.vote_average.toFixed(1)} / 10
+                  {typeof movie?.vote_average === 'number'
+                    ? `${movie.vote_average.toFixed(1)} / 10`
+                    : 'No rating'}
                 </div>
               </div>
             </div>
