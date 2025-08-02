@@ -6,11 +6,12 @@
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: #c7d1e0;
+  color: var(--text);
 }
 
 .results-item {
-  background-color: #1f2937;
+  background-color: var(--card-bg);
+  color: var(--card-text);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 0.5rem;
@@ -32,7 +33,7 @@
 
 .results-empty {
   text-align: center;
-  color: #4b5563;
+  color: var(--card-text);
   margin-top: 1.5rem;
 }
 
@@ -74,6 +75,49 @@
 
 .current-page {
   font-size: 1.1rem;
-  color: #333;
+  color: var(--text);
   margin: 0 10px;
+}
+
+@media screen and (max-width: 600px) {
+  .results-container {
+    padding: 0.75rem;
+  }
+
+  .results-title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .results-scroller {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .results-item {
+    padding: 0.5rem;
+    border-radius: 10px;
+  }
+
+  .results-empty {
+    font-size: 0.95rem;
+    padding: 0 1rem;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pagination-btn {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    margin: 0;
+  }
+
+  .current-page {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+  }
 }

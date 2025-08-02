@@ -9,6 +9,7 @@ import reactCompiler from 'eslint-plugin-react-compiler';
 
 export default tseslint.config(
   { ignores: ['dist'] },
+
   {
     extends: [
       js.configs.recommended,
@@ -40,6 +41,13 @@ export default tseslint.config(
       react: {
         version: 'detect',
       },
+    },
+  },
+
+  {
+    files: ['**/test-utils.{ts,tsx}', '**/*.test.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   }
 );

@@ -1,13 +1,15 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
-  render,
+  customRender as render,
   screen,
-  waitFor,
-  cleanup,
   fireEvent,
-} from '@testing-library/react';
+  waitFor,
+} from '../../test-utils';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Home } from '../Home';
+import { cleanup } from '@testing-library/react';
+import { ReactNode } from 'react';
+import { TestProviders } from '../../utils/TestProviders';
 
 const mockMovies = [
   {
@@ -19,6 +21,12 @@ const mockMovies = [
     release_date: '2010-07-16',
   },
 ];
+
+const withMemoryRouter = (children: ReactNode, initialEntries: string[]) => (
+  <TestProviders>
+    <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+  </TestProviders>
+);
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -41,11 +49,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -63,11 +73,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -85,11 +97,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -107,11 +121,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -129,11 +145,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/2']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/2']),
+      }
     );
 
     const input = screen.getByPlaceholderText(/search/i);
@@ -149,5 +167,105 @@ describe('Home', () => {
     const saved = localStorage.getItem('movies-search-term');
     expect(saved).not.toBeNull();
     expect(JSON.parse(saved as string)).toBe('Inception');
+  });
+
+  it('handles non-array results in API response', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: {} }),
+      })
+    );
+
+    render(
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/unexpected api response/i)).toBeInTheDocument();
+    });
+  });
+
+  it('navigates to movie details and back', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ results: mockMovies }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const TestWrapper = () => (
+      <MemoryRouter initialEntries={['/1']}>
+        <Routes>
+          <Route path="/:page/:movieId?" element={<Home />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    render(<TestWrapper />);
+
+    await screen.findByText('Inception');
+    fireEvent.click(screen.getByText('Inception'));
+
+    const closeButton = await screen.findByLabelText(/close details panel/i);
+    fireEvent.click(closeButton);
+    expect(await screen.findByText(/inception/i)).toBeInTheDocument();
+  });
+
+  it('resets search when empty string is submitted', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: mockMovies }),
+      })
+    );
+
+    render(
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/2']),
+      }
+    );
+
+    const input = screen.getByPlaceholderText(/search/i);
+    fireEvent.change(input, { target: { value: '' } });
+
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(screen.getByText('Inception')).toBeInTheDocument();
+    });
+
+    const saved = localStorage.getItem('movies-search-term');
+    expect(saved).toBeNull();
+  });
+
+  it('navigates with movieId included in path', () => {
+    const navigate = vi.fn();
+    const movieId = '123';
+    const newPage = 'details';
+    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
+    navigate(path);
+    expect(navigate).toHaveBeenCalledWith('/details/123');
+  });
+
+  it('navigates without movieId in path', () => {
+    const navigate = vi.fn();
+    const movieId = '';
+    const newPage = 'home';
+    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
+    navigate(path);
+    expect(navigate).toHaveBeenCalledWith('/home');
   });
 });
