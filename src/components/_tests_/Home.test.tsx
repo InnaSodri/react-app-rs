@@ -168,4 +168,87 @@ describe('Home', () => {
     expect(saved).not.toBeNull();
     expect(JSON.parse(saved as string)).toBe('Inception');
   });
+
+  it('handles non-array results in API response', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: {} }),
+      })
+    );
+
+    render(
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/unexpected api response/i)).toBeInTheDocument();
+    });
+  });
+
+  it('navigates to movie details and back', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ results: mockMovies }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const TestWrapper = () => (
+      <MemoryRouter initialEntries={['/1']}>
+        <Routes>
+          <Route path="/:page/:movieId?" element={<Home />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    render(<TestWrapper />);
+
+    await screen.findByText('Inception');
+    fireEvent.click(screen.getByText('Inception'));
+
+    await screen.findByLabelText(/close/i);
+    fireEvent.click(screen.getByLabelText(/close/i));
+
+    expect(screen.getByText('Inception')).toBeInTheDocument();
+  });
+
+  it('resets search when empty string is submitted', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ results: mockMovies }),
+      })
+    );
+
+    render(
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/2']),
+      }
+    );
+
+    const input = screen.getByPlaceholderText(/search/i);
+    fireEvent.change(input, { target: { value: '' } });
+
+    const button = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(button);
+
+    await waitFor(() => {
+      expect(screen.getByText('Inception')).toBeInTheDocument();
+    });
+
+    const saved = localStorage.getItem('movies-search-term');
+    expect(saved).toBeNull();
+  });
 });
