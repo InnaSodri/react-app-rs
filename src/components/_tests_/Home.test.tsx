@@ -1,13 +1,15 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
-  render,
+  customRender as render,
   screen,
-  waitFor,
-  cleanup,
   fireEvent,
-} from '@testing-library/react';
+  waitFor,
+} from '../../test-utils';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Home } from '../Home';
+import { cleanup } from '@testing-library/react';
+import { ReactNode } from 'react';
+import { TestProviders } from '../../utils/TestProviders';
 
 const mockMovies = [
   {
@@ -19,6 +21,12 @@ const mockMovies = [
     release_date: '2010-07-16',
   },
 ];
+
+const withMemoryRouter = (children: ReactNode, initialEntries: string[]) => (
+  <TestProviders>
+    <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+  </TestProviders>
+);
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -41,11 +49,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -63,11 +73,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -85,11 +97,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -107,11 +121,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/1']),
+      }
     );
 
     await waitFor(() => {
@@ -129,11 +145,13 @@ describe('Home', () => {
     );
 
     render(
-      <MemoryRouter initialEntries={['/2']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
+      <Routes>
+        <Route path="/:page/:movieId?" element={<Home />} />
+      </Routes>,
+      {
+        wrapper: ({ children }: { children: ReactNode }) =>
+          withMemoryRouter(children, ['/2']),
+      }
     );
 
     const input = screen.getByPlaceholderText(/search/i);

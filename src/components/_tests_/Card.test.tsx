@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import Card from '../Card';
+import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { customRender as render } from '../../test-utils';
+import Card from '../Card';
 
 const baseMovie = {
   id: 1,
@@ -22,14 +23,14 @@ describe('Card Component', () => {
 
   it('uses correct poster image when poster_path exists', () => {
     render(<Card movie={baseMovie} />);
-    const img = screen.getByAltText('Poster of Inception') as HTMLImageElement;
-    expect(img.src).toContain('/poster.jpg');
+    const img = screen.getByAltText('Poster of Inception');
+    expect((img as HTMLImageElement).src).toContain('/poster.jpg');
   });
 
   it('uses fallback poster when poster_path is null', () => {
     render(<Card movie={{ ...baseMovie, poster_path: null }} />);
-    const img = screen.getByAltText('Poster of Inception') as HTMLImageElement;
-    expect(img.src).toContain('unsplash.com');
+    const img = screen.getByAltText('Poster of Inception');
+    expect((img as HTMLImageElement).src).toContain('unsplash.com');
   });
 
   it('shows "No description available." if overview is empty', () => {
@@ -47,7 +48,6 @@ describe('Card Component', () => {
     render(<Card movie={baseMovie} onClick={handleClick} />);
     const image = screen.getByRole('img', { name: 'Poster of Inception' });
     const card = image.closest('.card');
-    expect(card).not.toBeNull();
     if (card) fireEvent.click(card);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });

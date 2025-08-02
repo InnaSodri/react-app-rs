@@ -1,5 +1,8 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { toggleItem } from '../features/selectedItems/selectedItemsSlice';
+import { selectIsSelected } from '../features/selectedItems/selectedItemsSelectors';
 import { Movie } from '../types';
 import './Card.css';
 
@@ -9,6 +12,24 @@ interface Props {
 }
 
 const Card: React.FC<Props> = ({ movie, onClick }) => {
+  const dispatch = useAppDispatch();
+  const isSelected = useAppSelector(selectIsSelected(String(movie.id)));
+
+  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+
+    const payload = {
+      id: String(movie.id),
+      name: movie.title,
+      description: movie.overview || 'No description available.',
+      detailsUrl: `https://www.themoviedb.org/movie/${movie.id}`,
+    };
+
+    console.log('🔥 Dispatching toggleItem with:', payload); // ✅ Debug output
+
+    dispatch(toggleItem(payload));
+  };
+
   const getImageUrl = (posterPath: string | null): string =>
     posterPath
       ? `https://image.tmdb.org/t/p/w500${posterPath}`
@@ -47,6 +68,17 @@ const Card: React.FC<Props> = ({ movie, onClick }) => {
           <Calendar />
           <span className="release-year">{releaseYear}</span>
         </div>
+
+        {/* ✅ Checkbox */}
+        <label className="card-checkbox">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={handleToggle}
+            onClick={(e) => e.stopPropagation()}
+          />
+          Select
+        </label>
       </div>
     </div>
   );

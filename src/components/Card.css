@@ -1,14 +1,13 @@
 .card {
-  background-color: #f9fafb; 
-  border-radius: 1rem; 
+  background-color: var(--card-bg);
+  color: var(--card-text);
+  border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid #e5e7eb; 
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -61,7 +60,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #1f2937;
+  color: var(--card-text);
   transition: color 0.3s ease;
 }
 
@@ -72,7 +71,7 @@
 
 .card-overview {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--card-text);
   margin-bottom: 1rem;
   overflow: hidden;
   display: -webkit-box;
@@ -84,7 +83,7 @@
 .card-meta {
   margin-top: auto;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--card-text);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -100,6 +99,20 @@
 .release-year {
   margin-left: 0.25rem;
   font-weight: 700;
-  color: #222222;
+  color: var(--card-text);
   font-size: 0.9rem;
+}
+
+.card-checkbox {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--card-text);
+}
+
+.card-checkbox input[type="checkbox"] {
+  accent-color: #3b82f6;
 }

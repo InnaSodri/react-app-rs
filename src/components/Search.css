@@ -1,4 +1,3 @@
-
 @keyframes fadeInUp {
   0% {
     opacity: 0;
@@ -14,7 +13,7 @@
   display: flex;
   max-width: 900px;
   margin: 2rem auto;
-  background: #1e293b;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
   overflow: hidden;
@@ -29,7 +28,7 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #e2e8f0;
+  color: var(--text);
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
@@ -61,6 +60,6 @@
 .search-icon {
   width: 24px;
   height: 24px;
-  stroke: currentColor; /* Ensure icon color follows text color */
+  stroke: currentColor;
   color: #1e293b;
 }
