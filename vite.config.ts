@@ -23,6 +23,7 @@ export default defineConfig({
         'src/setupTests.ts',
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
+        'src/main.tsx',
       ],
       thresholds: {
         global: {
