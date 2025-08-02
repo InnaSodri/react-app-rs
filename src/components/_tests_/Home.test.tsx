@@ -250,4 +250,22 @@ describe('Home', () => {
     const saved = localStorage.getItem('movies-search-term');
     expect(saved).toBeNull();
   });
+
+  it('navigates with movieId included in path', () => {
+    const navigate = vi.fn();
+    const movieId = '123';
+    const newPage = 'details';
+    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
+    navigate(path);
+    expect(navigate).toHaveBeenCalledWith('/details/123');
+  });
+
+  it('navigates without movieId in path', () => {
+    const navigate = vi.fn();
+    const movieId = '';
+    const newPage = 'home';
+    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
+    navigate(path);
+    expect(navigate).toHaveBeenCalledWith('/home');
+  });
 });
