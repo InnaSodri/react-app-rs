@@ -90,7 +90,6 @@ describe('Details component', () => {
     if (overlay) {
       fireEvent.click(overlay);
     } else {
-      console.log(container.innerHTML); // helpful for debugging
       throw new Error('Overlay element not found');
     }
 
