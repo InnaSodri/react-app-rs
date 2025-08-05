@@ -1,12 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import type { Movie } from '../types';
 const API_KEY = '4e44d9029b1270a757cddc766a1bcb63';
-
-interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-}
 
 interface SearchResponse {
   results: Movie[];
