@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 import { useGetMovieDetailsQuery } from '../services/tmdbApi';
 import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
-import './Details.css';
+import './styles/Details.css';
 
 export interface DetailsProps {
   movieId: number;

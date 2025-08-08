@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './ErrorBoundary.css';
+import './styles/Details.css';
 interface Props {
   children: React.ReactNode;
 }

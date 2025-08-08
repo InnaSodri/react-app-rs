@@ -59,6 +59,33 @@ describe('Flyout Component', () => {
     expect(store.getState().selectedItems.items).toEqual({});
   });
 
+  it('shows plural label when multiple items are selected', () => {
+    const store = configureStore({
+      reducer: { selectedItems: selectedItemsReducer },
+      preloadedState: {
+        selectedItems: {
+          items: {
+            '1': {
+              id: '1',
+              name: 'Movie One',
+              description: 'First movie.',
+              detailsUrl: 'https://example.com/1',
+            },
+            '2': {
+              id: '2',
+              name: 'Movie Two',
+              description: 'Second movie.',
+              detailsUrl: 'https://example.com/2',
+            },
+          },
+        },
+      },
+    });
+
+    renderWithProviders(<Flyout />, store);
+    expect(screen.getByText('2 items selected')).toBeInTheDocument();
+  });
+
   it('downloads CSV when download button is clicked', () => {
     const store = configureStore({
       reducer: { selectedItems: selectedItemsReducer },

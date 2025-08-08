@@ -6,7 +6,7 @@ import { useSavedSearchQuery } from '../hooks/useSavedSearchQuery';
 import LazyDetailsWrapper from './LazyDetailsWrapper';
 import { useSearchMoviesQuery, invalidateTags } from '../services/tmdbApi';
 import { store } from '../store';
-import './Home.css';
+import './styles/Home.css';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -14,9 +14,16 @@ export const Home: React.FC = () => {
   const savedQuery = useSavedSearchQuery();
   const [query, setQuery] = useState(savedQuery || '');
   const pageNumber = Number(page);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [justInvalidated, setJustInvalidated] = useState(false);
 
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useSearchMoviesQuery({ query, page: pageNumber }, { skip: !query });
+    useSearchMoviesQuery(
+      { query: query || 'popular', page: pageNumber },
+      {
+        skip: false,
+      }
+    );
 
   const handleSearch = (term: string) => {
     setQuery(term);
@@ -36,8 +43,19 @@ export const Home: React.FC = () => {
     navigate(`/${pageNumber}`);
   };
 
-  const handleInvalidate = () => {
+  const handleRefresh = async () => {
+    await refetch();
+    setLastUpdated(new Date());
+    setTimeout(() => setLastUpdated(null), 3000);
+  };
+
+  const handleInvalidate = async () => {
     store.dispatch(invalidateTags([{ type: 'Movies', id: 'LIST' }]));
+    await refetch();
+    setJustInvalidated(true);
+    setTimeout(() => setJustInvalidated(false), 2000);
+    setLastUpdated(new Date());
+    setTimeout(() => setLastUpdated(null), 3000);
   };
 
   return (
@@ -45,12 +63,24 @@ export const Home: React.FC = () => {
       <Search onSearch={handleSearch} initialValue={query} />
       <div className="master-detail-layout">
         <div className={movieId ? 'results-half' : 'results-full'}>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <button onClick={refetch} disabled={isFetching}>
-              Refresh
+          <div className="refresh-controls">
+            <button
+              className="refresh-btn"
+              onClick={handleRefresh}
+              disabled={isFetching}
+            >
+              🔄 Refresh
             </button>
-            <button onClick={handleInvalidate}>Invalidate Cache</button>
+            <button className="refresh-btn" onClick={handleInvalidate}>
+              ♻️ {justInvalidated ? 'Invalidated!' : 'Invalidate Cache'}
+            </button>
           </div>
+          {lastUpdated && (
+            <div className={`last-updated${justInvalidated ? ' hidden' : ''}`}>
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </div>
+          )}
+
           <Results
             movies={data?.results || []}
             loading={isLoading}
@@ -73,3 +103,5 @@ export const Home: React.FC = () => {
     </>
   );
 };
+
+export default Home;

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Details from '../Details';
 import { Movie } from '../../types';
+import { MemoryRouter } from 'react-router-dom';
+import { TestProviders } from '../../utils/TestProviders';
 
 const mockMovie: Movie = {
   id: 1,
@@ -12,31 +14,52 @@ const mockMovie: Movie = {
   vote_average: 8.8,
 };
 
-const mockFetch = (
-  response: Partial<Response> & { json: () => Promise<Movie> }
-) => {
-  vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-    ok: true,
-    ...response,
-  } as Response);
-};
+const okJson = (data: unknown) =>
+  new Response(JSON.stringify(data), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+const errJson = (data: unknown, status = 500) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 
 describe('Details component', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it('shows loading initially', async () => {
-    mockFetch({ json: async () => mockMovie });
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      okJson(mockMovie) as unknown as Response
+    );
 
-    render(<Details movieId={1} onClose={() => {}} />);
+    render(
+      <TestProviders>
+        <MemoryRouter>
+          <Details movieId={1} onClose={() => {}} />
+        </MemoryRouter>
+      </TestProviders>
+    );
+
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('renders movie details after fetch', async () => {
-    mockFetch({ json: async () => mockMovie });
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      okJson(mockMovie) as unknown as Response
+    );
 
-    render(<Details movieId={1} onClose={() => {}} />);
+    render(
+      <TestProviders>
+        <MemoryRouter>
+          <Details movieId={1} onClose={() => {}} />
+        </MemoryRouter>
+      </TestProviders>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/Inception/i)).toBeInTheDocument();
@@ -47,51 +70,65 @@ describe('Details component', () => {
   });
 
   it('shows error message on fetch failure', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({}),
-    } as Response);
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      errJson({ message: 'fail' }, 500) as unknown as Response
+    );
 
-    render(<Details movieId={1} onClose={() => {}} />);
+    render(
+      <TestProviders>
+        <MemoryRouter>
+          <Details movieId={999} onClose={() => {}} />
+        </MemoryRouter>
+      </TestProviders>
+    );
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Failed to fetch movie details/i)
+        screen.getByRole('heading', { name: /error/i })
       ).toBeInTheDocument();
     });
   });
 
   it('calls onClose when close button is clicked', async () => {
-    mockFetch({ json: async () => mockMovie });
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      okJson(mockMovie) as unknown as Response
+    );
     const onClose = vi.fn();
 
-    render(<Details movieId={1} onClose={onClose} />);
+    render(
+      <TestProviders>
+        <MemoryRouter>
+          <Details movieId={1} onClose={onClose} />
+        </MemoryRouter>
+      </TestProviders>
+    );
 
     const closeBtn = await screen.findByRole('button', {
       name: /close details panel/i,
     });
     fireEvent.click(closeBtn);
-
     expect(onClose).toHaveBeenCalled();
   });
 
   it('calls onClose when overlay is clicked', async () => {
-    mockFetch({ json: async () => mockMovie });
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      okJson(mockMovie) as unknown as Response
+    );
     const onClose = vi.fn();
 
-    const { container } = render(<Details movieId={1} onClose={onClose} />);
+    const { container } = render(
+      <TestProviders>
+        <MemoryRouter>
+          <Details movieId={1} onClose={onClose} />
+        </MemoryRouter>
+      </TestProviders>
+    );
 
-    // Wait for movie title to ensure loading is complete
     await screen.findByText(/Inception/i);
 
     const overlay = container.querySelector('.details-overlay');
-
-    if (overlay) {
-      fireEvent.click(overlay);
-    } else {
-      throw new Error('Overlay element not found');
-    }
+    if (!overlay) throw new Error('Overlay element not found');
+    fireEvent.click(overlay);
 
     expect(onClose).toHaveBeenCalled();
   });

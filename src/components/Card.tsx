@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { toggleItem } from '../features/selectedItems/selectedItemsSlice';
 import { selectIsSelected } from '../features/selectedItems/selectedItemsSelectors';
 import { Movie } from '../types';
-import './Card.css';
+import './styles/Card.css';
 
 interface Props {
   movie: Movie;

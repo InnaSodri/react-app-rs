@@ -3,7 +3,7 @@ import Card from './Card';
 import { Loading } from './Loading';
 import ErrorMessage from './ErrorMessage';
 import { Movie } from '../types';
-import './Results.css';
+import './styles/Results.css';
 
 interface Props {
   movies: Movie[];

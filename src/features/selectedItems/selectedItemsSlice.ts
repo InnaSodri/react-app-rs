@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Item {
+export interface SelectedItem {
   id: string;
   name: string;
   description: string;
@@ -8,7 +8,7 @@ interface Item {
 }
 
 interface SelectedItemsState {
-  items: Record<string, Item>;
+  items: Record<string, SelectedItem>;
 }
 
 const initialState: SelectedItemsState = {
@@ -19,7 +19,7 @@ const selectedItemsSlice = createSlice({
   name: 'selectedItems',
   initialState,
   reducers: {
-    toggleItem(state, action: PayloadAction<Item>) {
+    toggleItem(state, action: PayloadAction<SelectedItem>) {
       const id = action.payload.id;
       if (state.items[id]) {
         const rest = Object.fromEntries(
