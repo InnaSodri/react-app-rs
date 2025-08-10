@@ -1,0 +1,85 @@
+.refresh-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.refresh-btn {
+  padding: 0.75rem 1.6rem;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--btn-text);
+  cursor: pointer;
+  background: var(--refresh-bg);
+  box-shadow: var(--refresh-shadow);
+  transition: transform 0.3s ease, box-shadow 0.4s ease, background 0.4s ease;
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  background: var(--refresh-hover-bg);
+  box-shadow: var(--refresh-hover-shadow);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: var(--refresh-shadow);
+  }
+  50% {
+    box-shadow: var(--refresh-hover-shadow);
+  }
+  100% {
+    box-shadow: var(--refresh-shadow);
+  }
+}
+
+.last-updated {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--card-text);
+  background: var(--flyout-bg);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  text-align: center;
+  margin: 0.5rem auto 1.5rem;
+  max-width: fit-content;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1), inset 0 0 4px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  opacity: 1;
+  transition: opacity 0.8s ease, transform 0.5s ease;
+  transform: scale(1);
+}
+
+.last-updated.hidden {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+
+@media (max-width: 768px) {
+  .refresh-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.6rem;
+  }
+}

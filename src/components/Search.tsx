@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
-import './Search.css';
+import './styles/Search.css';
 
 const STORAGE_KEY = 'movies-search-term';
 

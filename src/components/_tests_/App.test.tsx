@@ -45,15 +45,14 @@ describe('App component', () => {
       </TestProviders>
     );
 
-    const toggleButton = screen.getByRole('button', {
-      name: /switch to dark mode/i,
-    });
-    expect(toggleButton).toBeInTheDocument();
+    const toggle = screen.getByRole('checkbox');
+    const wrapper = document.querySelector<HTMLDivElement>('.app-wrapper');
+    if (!wrapper) {
+      throw new Error('Expected .app-wrapper to be in the document');
+    }
 
-    fireEvent.click(toggleButton);
-
-    expect(
-      screen.getByRole('button', { name: /switch to light mode/i })
-    ).toBeInTheDocument();
+    expect(wrapper).toHaveClass('light');
+    fireEvent.click(toggle);
+    expect(wrapper).toHaveClass('dark');
   });
 });

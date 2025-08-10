@@ -1,271 +1,220 @@
-import { describe, it, expect, vi } from 'vitest';
 import {
-  customRender as render,
+  render,
   screen,
   fireEvent,
   waitFor,
-} from '../../test-utils';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+  act,
+} from '@testing-library/react';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Home } from '../Home';
-import { cleanup } from '@testing-library/react';
-import { ReactNode } from 'react';
-import { TestProviders } from '../../utils/TestProviders';
+import { ThemeProvider } from '../../contexts';
+import { Provider } from 'react-redux';
+import { store } from '../../store';
+import type { Mock } from 'vitest';
+import type { Middleware, Reducer } from '@reduxjs/toolkit';
 
-const mockMovies = [
-  {
-    id: 1,
-    title: 'Inception',
-    overview: 'Dreams within dreams.',
-    poster_path: '/poster.jpg',
-    vote_average: 8.8,
-    release_date: '2010-07-16',
-  },
-];
+vi.mock('../../services/tmdbApi', () => {
+  const reducer: Reducer = (state) => state ?? {};
+  const middleware: Middleware = () => (next) => (action) => next(action);
+  return {
+    useSearchMoviesQuery: vi.fn(),
+    useGetMovieDetailsQuery: vi.fn(() => ({
+      data: {
+        id: 1,
+        title: 'Inception',
+        overview: 'No description available.',
+      },
+      isLoading: false,
+      isError: false,
+      error: null,
+      refetch: vi.fn(),
+    })),
+    invalidateTags: vi.fn(() => ({ type: 'invalidate' })),
+    tmdbApi: { reducerPath: 'tmdbApi', reducer, middleware },
+  };
+});
 
-const withMemoryRouter = (children: ReactNode, initialEntries: string[]) => (
-  <TestProviders>
-    <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-  </TestProviders>
-);
+import { useSearchMoviesQuery } from '../../services/tmdbApi';
+
+type Movie = { id: number; title: string };
+
+type SearchReturn = {
+  data?: { results: Movie[] } | undefined;
+  isLoading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  error: Error | null;
+  refetch: () => Promise<void>;
+};
+
+const refetchMock: Mock<() => Promise<void>> = vi.fn(() => Promise.resolve());
+
+function LocationProbe() {
+  const loc = useLocation();
+  return <div data-testid="loc">{loc.pathname}</div>;
+}
+
+function renderAt(path = '/1') {
+  return render(
+    <Provider store={store}>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/:page?/:movieId?" element={<Home />} />
+          </Routes>
+          <LocationProbe />
+        </MemoryRouter>
+      </ThemeProvider>
+    </Provider>
+  );
+}
+
+const mockedUseSearch = vi.mocked(useSearchMoviesQuery);
+
+function setQueryReturn(partial: Partial<SearchReturn>) {
+  const base: SearchReturn = {
+    data: { results: [] },
+    isLoading: false,
+    isFetching: false,
+    isError: false,
+    error: null,
+    refetch: refetchMock,
+  };
+  const value = { ...base, ...partial } as unknown as ReturnType<
+    typeof useSearchMoviesQuery
+  >;
+  mockedUseSearch.mockReturnValue(value);
+}
 
 beforeEach(() => {
-  vi.restoreAllMocks();
-  localStorage.clear();
+  refetchMock.mockClear();
 });
 
 afterEach(() => {
-  cleanup();
-  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('Home', () => {
-  it('renders movies from fetch', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ results: mockMovies }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/1']),
-      }
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Inception')).toBeInTheDocument();
-    });
+  it('renders search input and buttons', () => {
+    setQueryReturn({});
+    renderAt();
+    expect(screen.getByPlaceholderText(/search movies/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /refresh/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /invalidate cache/i })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
   });
 
-  it('shows no results when API returns empty results array', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ results: [] }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/1']),
-      }
-    );
-
-    await waitFor(() => {
-      expect(screen.queryByText('Inception')).not.toBeInTheDocument();
-    });
-  });
-
-  it('handles API error (response not ok)', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/1']),
-      }
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('HTTP error! status: 500')).toBeInTheDocument();
-    });
-  });
-
-  it('handles invalid API response format', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ wrongKey: [] }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/1']),
-      }
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/unexpected api response/i)).toBeInTheDocument();
-    });
-  });
-
-  it('search updates the query and navigates to page 1', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ results: mockMovies }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/2']),
-      }
-    );
-
-    const input = screen.getByPlaceholderText(/search/i);
+  it('shows data after search', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1');
+    const input = screen.getByPlaceholderText(/search movies/i);
     fireEvent.change(input, { target: { value: 'Inception' } });
+    fireEvent.click(screen.getByRole('button', { name: /search/i }));
+    expect(await screen.findByText('Inception')).toBeInTheDocument();
+  });
 
-    const button = screen.getByRole('button', { name: /search/i });
-    fireEvent.click(button);
+  it('displays error state when error is true', async () => {
+    setQueryReturn({
+      isError: true,
+      error: new Error('Fetch failed'),
+      data: { results: [] },
+    });
+    renderAt('/1');
+    const input = screen.getByPlaceholderText(/search movies/i);
+    fireEvent.change(input, { target: { value: 'anything' } });
+    fireEvent.click(screen.getByRole('button', { name: /search/i }));
+    expect(await screen.findByText(/error/i)).toBeInTheDocument();
+    expect(screen.getByText(/fetch failed/i)).toBeInTheDocument();
+  });
+
+  it('navigates to next page when Next is clicked', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1');
+    expect(await screen.findByText('Inception')).toBeInTheDocument();
+    const next = screen.getByRole('button', { name: /next/i });
+    fireEvent.click(next);
+    await waitFor(() => {
+      expect(screen.getByTestId('loc')).toHaveTextContent('/2');
+    });
+  });
+
+  it('opens details for a movie and updates URL', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1');
+    const card = await screen.findByText('Inception');
+    fireEvent.click(card);
+    await waitFor(() => {
+      expect(screen.getByTestId('loc')).toHaveTextContent('/1/1');
+    });
+  });
+
+  it('renders details pane when movieId is present and closes on main area click', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1/1');
+    expect(document.querySelector('.details-pane')).toBeInTheDocument();
+    const mainArea =
+      document.querySelector('.results-half') ||
+      document.querySelector('.results-full') ||
+      document.body;
+    if (mainArea) {
+      fireEvent.click(mainArea);
+    }
+    await waitFor(() => {
+      expect(screen.getByTestId('loc')).toHaveTextContent('/1');
+    });
+  });
+
+  it('calls refetch on Refresh', async () => {
+    setQueryReturn({ data: { results: [] } });
+    renderAt('/1');
+    const btn = screen.getByRole('button', { name: /refresh/i });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+    expect(refetchMock).toHaveBeenCalled();
+  });
+
+  it('invalidates cache and calls refetch', async () => {
+    setQueryReturn({ data: { results: [] } });
+    renderAt('/1');
+    const btn = screen.getByRole('button', { name: /invalidate cache/i });
+    await act(async () => {
+      fireEvent.click(btn);
+    });
+    expect(refetchMock).toHaveBeenCalled();
+  });
+
+  it('uses results-full when no movieId', async () => {
+    setQueryReturn({ data: { results: [] } });
+    renderAt('/1');
+    expect(document.querySelector('.results-full')).toBeInTheDocument();
+    expect(document.querySelector('.results-half')).toBeNull();
+  });
+
+  it('uses results-half when movieId exists', async () => {
+    setQueryReturn({ data: { results: [] } });
+    renderAt('/1/123');
+    expect(document.querySelector('.results-half')).toBeInTheDocument();
+  });
+  it('closes details on overlay click and navigates back to /:page', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1/1');
 
     await waitFor(() => {
-      expect(screen.getByText('Inception')).toBeInTheDocument();
+      const overlay = document.querySelector('.details-overlay');
+      if (!overlay) throw new Error('no overlay yet');
     });
 
-    const saved = localStorage.getItem('movies-search-term');
-    expect(saved).not.toBeNull();
-    expect(JSON.parse(saved as string)).toBe('Inception');
-  });
-
-  it('handles non-array results in API response', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ results: {} }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/1']),
-      }
-    );
+    const overlay = document.querySelector('.details-overlay') as HTMLElement;
+    fireEvent.click(overlay);
 
     await waitFor(() => {
-      expect(screen.getByText(/unexpected api response/i)).toBeInTheDocument();
+      expect(screen.getByTestId('loc')).toHaveTextContent('/1');
     });
-  });
-
-  it('navigates to movie details and back', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ results: mockMovies }),
-    });
-    vi.stubGlobal('fetch', fetchMock);
-
-    const TestWrapper = () => (
-      <MemoryRouter initialEntries={['/1']}>
-        <Routes>
-          <Route path="/:page/:movieId?" element={<Home />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    render(<TestWrapper />);
-
-    await screen.findByText('Inception');
-    fireEvent.click(screen.getByText('Inception'));
-
-    const closeButton = await screen.findByLabelText(/close details panel/i);
-    fireEvent.click(closeButton);
-    expect(await screen.findByText(/inception/i)).toBeInTheDocument();
-  });
-
-  it('resets search when empty string is submitted', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ results: mockMovies }),
-      })
-    );
-
-    render(
-      <Routes>
-        <Route path="/:page/:movieId?" element={<Home />} />
-      </Routes>,
-      {
-        wrapper: ({ children }: { children: ReactNode }) =>
-          withMemoryRouter(children, ['/2']),
-      }
-    );
-
-    const input = screen.getByPlaceholderText(/search/i);
-    fireEvent.change(input, { target: { value: '' } });
-
-    const button = screen.getByRole('button', { name: /search/i });
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(screen.getByText('Inception')).toBeInTheDocument();
-    });
-
-    const saved = localStorage.getItem('movies-search-term');
-    expect(saved).toBeNull();
-  });
-
-  it('navigates with movieId included in path', () => {
-    const navigate = vi.fn();
-    const movieId = '123';
-    const newPage = 'details';
-    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
-    navigate(path);
-    expect(navigate).toHaveBeenCalledWith('/details/123');
-  });
-
-  it('navigates without movieId in path', () => {
-    const navigate = vi.fn();
-    const movieId = '';
-    const newPage = 'home';
-    const path = `/${newPage}${movieId ? `/${movieId}` : ''}`;
-    navigate(path);
-    expect(navigate).toHaveBeenCalledWith('/home');
   });
 });

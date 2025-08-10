@@ -6,7 +6,7 @@ import {
   selectSelectedItems,
 } from '../features/selectedItems/selectedItemsSelectors';
 
-import './Flyout.css';
+import './styles/Flyout.css';
 
 const Flyout: React.FC = () => {
   const dispatch = useAppDispatch();

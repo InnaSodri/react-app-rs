@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './app/store';
+import { store } from './store';
 import { router } from './router';
 import { ThemeProvider } from '../src/contexts';
 
