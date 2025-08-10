@@ -201,4 +201,20 @@ describe('Home', () => {
     renderAt('/1/123');
     expect(document.querySelector('.results-half')).toBeInTheDocument();
   });
+  it('closes details on overlay click and navigates back to /:page', async () => {
+    setQueryReturn({ data: { results: [{ id: 1, title: 'Inception' }] } });
+    renderAt('/1/1');
+
+    await waitFor(() => {
+      const overlay = document.querySelector('.details-overlay');
+      if (!overlay) throw new Error('no overlay yet');
+    });
+
+    const overlay = document.querySelector('.details-overlay') as HTMLElement;
+    fireEvent.click(overlay);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loc')).toHaveTextContent('/1');
+    });
+  });
 });
