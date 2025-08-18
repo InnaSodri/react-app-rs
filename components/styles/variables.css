@@ -1,0 +1,57 @@
+:root{ --details-w: clamp(320px,30vw,300px); }
+
+.app-wrapper.light {
+  --bg:#f0f4f8;
+  --text:#222222;
+  --card-bg:#f5f5f5;
+  --card-text:#2c2c2c;
+  --flyout-bg:#ffffffee;
+
+  --toggle-bg:#2563eb;
+  --toggle-text:#ffffff;
+  --toggle-hover:#1e40af;
+
+  --btn-bg:#2d88ff;
+  --btn-text:#ffffff;
+  --btn-bg-hover:#1a6ce0;
+
+  --refresh-bg:linear-gradient(135deg,#ffd700,#ffcc33);
+  --refresh-hover-bg:linear-gradient(135deg,#facc15,#fbbf24);
+  --refresh-shadow:0 0 8px rgba(255,215,0,.5),0 0 10px rgba(255,200,0,.4),inset 0 0 4px rgba(255,223,100,.3);
+  --refresh-hover-shadow:0 0 12px rgba(255,215,0,.7),0 0 14px rgba(255,200,0,.6),inset 0 0 6px rgba(255,223,100,.4);
+
+  --about-bg:#f2d220;
+  --about-text:#111;
+  --about-hover-bg:#ffe066;
+  --about-hover-text:#000;
+  --about-glow:#fcd34d;
+}
+
+.app-wrapper.dark {
+  --bg:#000000;
+  --text:#e5e5e5;
+  --card-bg:#1a1a1a;
+  --card-text:#f5f5f5;
+  --flyout-bg:#46474bcf;
+
+  --toggle-bg:#333333;
+  --toggle-text:#f5f5f5;
+  --toggle-hover:#444444;
+
+  --btn-bg:#4a90e2;
+  --btn-text:#ffffff;
+  --btn-bg-hover:#367bc9;
+
+  --refresh-bg:linear-gradient(135deg,#00fff7,#4ecdc4);
+  --refresh-hover-bg:linear-gradient(135deg,#66fcf1,#38b2ac);
+  --refresh-shadow:0 0 10px rgba(0,255,247,.5),0 0 14px rgba(78,205,196,.45),inset 0 0 6px rgba(0,255,247,.25);
+  --refresh-hover-shadow:0 0 14px rgba(0,255,247,.7),0 0 18px rgba(78,205,196,.6),inset 0 0 8px rgba(0,255,247,.35);
+
+  --about-bg:#0ea5e9;
+  --about-text:#ffffff;
+  --about-hover-bg:#38bdf8;
+  --about-hover-text:#ffffff;
+  --about-glow:#22d3ee;
+}
+
+html,body{background:var(--bg);color:var(--text)}
