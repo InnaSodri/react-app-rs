@@ -1,5 +1,6 @@
 'use client';
-import {usePathname, useRouter, useSearchParams} from '@/navigation';
+import {usePathname, useRouter} from '@/navigation';
+import {useSearchParams} from 'next/navigation';
 import {useLocale} from 'next-intl';
 import type {AppPathname} from '@/i18n/routing';
 

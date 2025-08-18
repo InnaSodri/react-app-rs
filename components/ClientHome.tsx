@@ -1,7 +1,8 @@
 'use client';
 
 import {useState, useEffect} from 'react';
-import {useSearchParams, useRouter, usePathname, Link} from '@/navigation';
+import {useRouter, usePathname, Link} from '@/navigation';
+import {useSearchParams} from 'next/navigation';
 import type {AppPathname} from '@/i18n/routing';
 import type {FetchBaseQueryError} from '@reduxjs/toolkit/query';
 import type {SerializedError} from '@reduxjs/toolkit';
