@@ -6,6 +6,7 @@ import { useGetMovieDetailsQuery } from "@/services/tmdbApi";
 import { Loading } from "@/components/Loading";
 import ErrorMessage from "@/components/ErrorMessage";
 import "@/components/styles/Details.css";
+import { useLocale } from "next-intl";
 
 export interface DetailsProps {
   movieId: number;
@@ -14,9 +15,10 @@ export interface DetailsProps {
 
 export default function Details({ movieId, onClose }: DetailsProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
 
   const { data: movie, isLoading, isError, error } = useGetMovieDetailsQuery(
-    String(movieId),
+    { id: String(movieId), locale },
     { skip: !movieId }
   );
 
@@ -57,7 +59,7 @@ export default function Details({ movieId, onClose }: DetailsProps) {
                   width={240}
                   height={290}
                   src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                  alt={movie.title}
+                  alt={movie.title ?? ""}
                   className="details-poster"
                 />
               )}
