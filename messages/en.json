@@ -1,0 +1,11 @@
+{
+  "home": {
+    "title": "Welcome to the Movie App",
+    "search": "Search",
+    "results": "Results",
+    "refresh": "Refresh",
+    "invalidate": "Invalidate Cache",
+    "invalidated": "Cache invalidated",
+    "lastUpdated": "Last updated"
+  }
+}
