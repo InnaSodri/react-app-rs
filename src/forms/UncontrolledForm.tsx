@@ -75,16 +75,17 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
       <label htmlFor="password">Password</label>
       <input id="password" name="password" type="password" onChange={e => setPwd(e.target.value)} />
 
-      <label htmlFor="confirm">Confirm Password</label>
-      <input id="confirm" name="confirm" type="password" />
-      {errors.confirm && <div className="err">{errors.confirm}</div>}
-
       <div className="strength">
         <span data-ok={s.hasNumber}>1 number</span>
         <span data-ok={s.hasUpper}>1 upper</span>
         <span data-ok={s.hasLower}>1 lower</span>
         <span data-ok={s.hasSpecial}>1 special</span>
       </div>
+
+
+      <label htmlFor="confirm">Confirm Password</label>
+      <input id="confirm" name="confirm" type="password" />
+      {errors.confirm && <div className="err">{errors.confirm}</div>}
 
       <fieldset>
         <legend>Gender</legend>
