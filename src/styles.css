@@ -254,6 +254,9 @@ input[type="file"] { padding: 8px; }
 .form.compact input[type="radio"] {
   width: .95rem; height: .95rem; margin-right: 6px;
 }
+
+.auto[data-open="false"] ul { display: none; }
+
 @media (max-width: 520px) {
   .dialog { padding: 14px }
   .dialog.compact { padding: 10px; width: 100% }
