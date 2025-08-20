@@ -72,6 +72,13 @@ export default function RHFForm({ onDone, compact = false }: Props) {
       <label htmlFor="password2">Password</label>
       <input id="password2" type="password" {...register('password')} />
 
+      <div className="strength">
+        <span data-ok={/\d/.test(password)}>1 number</span>
+        <span data-ok={/[A-Z]/.test(password)}>1 upper</span>
+        <span data-ok={/[a-z]/.test(password)}>1 lower</span>
+        <span data-ok={/[^A-Za-z0-9]/.test(password)}>1 special</span>
+      </div>
+
       <label htmlFor="confirm2">Confirm Password</label>
       <input id="confirm2" type="password" {...register('confirm')} />
       {errors.confirm && <div className="err">{errors.confirm.message}</div>}
@@ -93,13 +100,6 @@ export default function RHFForm({ onDone, compact = false }: Props) {
 
       <CountryAutocomplete id="country2" value={countryUi} onChange={onCountryChange} />
       {errors.country && <div className="err">{errors.country.message}</div>}
-
-      <div className="strength">
-        <span data-ok={/\d/.test(password)}>1 number</span>
-        <span data-ok={/[A-Z]/.test(password)}>1 upper</span>
-        <span data-ok={/[a-z]/.test(password)}>1 lower</span>
-        <span data-ok={/[^A-Za-z0-9]/.test(password)}>1 special</span>
-      </div>
 
       <button type="submit" disabled={!isValid || isSubmitting}>Submit</button>
     </form>
