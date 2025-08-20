@@ -11,11 +11,14 @@ describe('RHF flow', () => {
     async () => {
       const u = userEvent.setup({ delay: null })
 
-      render(<Provider store={store}><App /></Provider>)
+      render(
+        <Provider store={store}>
+          <App />
+        </Provider>
+      )
 
-      await u.click(screen.getByRole('button', { name: /react hook form|rhf/i }))
-      const dialog = screen.getByRole('dialog')
-      const q = within(dialog)
+      await u.click(screen.getByRole('button', { name: /open react hook form/i }))
+      const q = within(await screen.findByRole('dialog'))
 
       await u.type(q.getByLabelText('Name'), 'Alice')
       await u.type(q.getByLabelText('Age'), '22')
@@ -24,8 +27,10 @@ describe('RHF flow', () => {
       await u.type(q.getByLabelText('Confirm Password'), 'A1a!xxxx')
       await u.click(q.getByLabelText('Female', { selector: 'input[type="radio"]' }))
       await u.click(q.getByLabelText(/Accept T&C/i, { selector: 'input[type="checkbox"]' }))
-      await u.type(q.getByLabelText('Country'), 'Israel')
-      await u.click(await q.findByRole('button', { name: /^Israel$/ }))
+
+      await u.type(q.getByLabelText('Country'), 'Isr')
+      const listbox = await q.findByRole('listbox')
+      await u.click(within(listbox).getByRole('button', { name: 'Israel' }))
 
       await u.click(q.getByRole('button', { name: /submit/i }))
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
@@ -35,14 +40,11 @@ describe('RHF flow', () => {
       expect(first).toBeTruthy()
       expect(first!.classList.contains('tile-new')).toBe(true)
 
-      await waitFor(
-        () => {
-          const t = getFirstTile()
-          expect(t).toBeTruthy()
-          expect(t!.classList.contains('tile-new')).toBe(false)
-        },
-        { timeout: 5000 }
-      )
+      await waitFor(() => {
+        const t = getFirstTile()
+        expect(t).toBeTruthy()
+        expect(t!.classList.contains('tile-new')).toBe(false)
+      }, { timeout: 5000 })
     },
     15000
   )
