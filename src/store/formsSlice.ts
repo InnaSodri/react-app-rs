@@ -14,7 +14,7 @@ export type FormEntry = {
   imageBase64?: string
   country: string
   strength: Strength
-  source: 'uncontrolled'|'rhf'
+   source: 'uncontrolled' | 'rhf' | 'formik'
 }
 
 type State = { entries: FormEntry[] }

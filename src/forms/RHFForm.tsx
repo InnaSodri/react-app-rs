@@ -28,11 +28,14 @@ export default function RHFForm({ onDone, compact = false }: Props) {
     defaultValues: {
       country: '',
       gender: 'other',
+      genderOther: '',
       strength: { hasLower: false, hasNumber: false, hasSpecial: false, hasUpper: false }
     }
   })
 
   const password = watch('password') || ''
+  const gender = watch('gender')
+  const s = getPasswordStrength(password)
 
   const onImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -70,13 +73,15 @@ export default function RHFForm({ onDone, compact = false }: Props) {
       {errors.email && <div className="err">{errors.email.message}</div>}
 
       <label htmlFor="password2">Password</label>
-      <input id="password2" type="password" {...register('password')} />
+      <input id="password2" {...register('password')} type="password" />
+      {errors.password && <div className="err">{errors.password.message}</div>}
 
       <div className="strength">
-        <span data-ok={/\d/.test(password)}>1 number</span>
-        <span data-ok={/[A-Z]/.test(password)}>1 upper</span>
-        <span data-ok={/[a-z]/.test(password)}>1 lower</span>
-        <span data-ok={/[^A-Za-z0-9]/.test(password)}>1 special</span>
+        <span data-ok={s.hasNumber}>1 number</span>
+        <span data-ok={s.hasUpper}>1 upper</span>
+        <span data-ok={s.hasLower}>1 lower</span>
+        <span data-ok={s.hasSpecial}>1 special</span>
+        <span data-ok={(watch('password') ?? '').length >= 8}>min 8 chars</span>
       </div>
 
       <label htmlFor="confirm2">Confirm Password</label>
@@ -89,6 +94,13 @@ export default function RHFForm({ onDone, compact = false }: Props) {
         <label><input type="radio" value="female" {...register('gender')} />Female</label>
         <label><input type="radio" value="other" defaultChecked {...register('gender')} />Other</label>
       </fieldset>
+      {gender === 'other' && (
+        <>
+          <label htmlFor="genderOther2">Please specify</label>
+          <input id="genderOther2" {...register('genderOther')} />
+          {errors.genderOther && <div className="err">{errors.genderOther.message}</div>}
+        </>
+      )}
       {errors.gender && <div className="err">{errors.gender.message}</div>}
 
       <label><input type="checkbox" {...register('accept')} />Accept T&C</label>

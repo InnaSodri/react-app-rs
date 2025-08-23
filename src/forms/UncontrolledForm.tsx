@@ -14,6 +14,7 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [country, setCountry] = useState('')
   const [pwd, setPwd] = useState('')
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>('other')
   const [locked, setLocked] = useState(false)
   const dispatch = useAppDispatch()
 
@@ -37,6 +38,7 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
       password: String(fd.get('password') || ''),
       confirm: String(fd.get('confirm') || ''),
       gender: String(fd.get('gender') || 'other') as 'male' | 'female' | 'other',
+      genderOther: String(fd.get('genderOther') || ''),
       accept: Boolean(fd.get('accept')),
       imageBase64,
       country,
@@ -50,14 +52,26 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
       setLocked(true)
       return
     }
-    dispatch(upsertEntry({ id: nanoid(), ...parsed.data, source: 'uncontrolled' }))
+    dispatch(
+      upsertEntry({
+        id: nanoid(),
+        ...parsed.data,
+        accept: true as const,
+        source: 'uncontrolled'
+      })
+    )
     onDone()
   }
 
   const s = getPasswordStrength(pwd)
 
   return (
-    <form ref={f} onSubmit={onSubmit} onInput={() => setLocked(false)} className={`form${compact ? ' compact' : ''}`}>
+    <form
+      ref={f}
+      onSubmit={onSubmit}
+      onInput={() => setLocked(false)}
+      className={`form${compact ? ' compact' : ''}`}
+    >
       <h2>Uncontrolled</h2>
 
       <label htmlFor="name">Name</label>
@@ -73,15 +87,21 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
       {errors.email && <div className="err">{errors.email}</div>}
 
       <label htmlFor="password">Password</label>
-      <input id="password" name="password" type="password" onChange={e => setPwd(e.target.value)} />
+      <input
+        id="password"
+        name="password"
+        type="password"
+        onChange={e => setPwd(e.target.value)}
+      />
+      {errors.password && <div className="err">{errors.password}</div>}
 
       <div className="strength">
         <span data-ok={s.hasNumber}>1 number</span>
         <span data-ok={s.hasUpper}>1 upper</span>
         <span data-ok={s.hasLower}>1 lower</span>
         <span data-ok={s.hasSpecial}>1 special</span>
+        <span data-ok={pwd.length >= 8}>min 8 chars</span>
       </div>
-
 
       <label htmlFor="confirm">Confirm Password</label>
       <input id="confirm" name="confirm" type="password" />
@@ -89,20 +109,62 @@ export default function UncontrolledForm({ onDone, compact = false }: Props) {
 
       <fieldset>
         <legend>Gender</legend>
-        <label><input type="radio" name="gender" value="male" />Male</label>
-        <label><input type="radio" name="gender" value="female" />Female</label>
-        <label><input type="radio" name="gender" value="other" defaultChecked />Other</label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="male"
+            onChange={() => setGender('male')}
+          />
+          Male
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="female"
+            onChange={() => setGender('female')}
+          />
+          Female
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="other"
+            defaultChecked
+            onChange={() => setGender('other')}
+          />
+          Other
+        </label>
       </fieldset>
+      {gender === 'other' && (
+        <>
+          <label htmlFor="genderOther">Please specify</label>
+          <input id="genderOther" name="genderOther" />
+          {errors.genderOther && <div className="err">{errors.genderOther}</div>}
+        </>
+      )}
       {errors.gender && <div className="err">{errors.gender}</div>}
 
-      <label><input type="checkbox" name="accept" />Accept T&C</label>
+      <label>
+        <input type="checkbox" name="accept" />
+        Accept T&C
+      </label>
       {errors.accept && <div className="err">{errors.accept}</div>}
 
       <label htmlFor="image">Picture</label>
       <input id="image" name="image" type="file" accept="image/png,image/jpeg" />
       {errors.image && <div className="err">{errors.image}</div>}
 
-      <CountryAutocomplete id="country" value={country} onChange={setCountry} />
+      <CountryAutocomplete
+        id="country"
+        value={country}
+        onChange={v => {
+          setCountry(v)
+          setLocked(false)
+        }}
+      />
       {errors.country && <div className="err">{errors.country}</div>}
 
       <button type="submit" disabled={locked}>Submit</button>
