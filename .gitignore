@@ -1,0 +1,32 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS / editors
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Dependencies
+node_modules/
+
+# Builds & test artifacts
+dist/
+dist-ssr/
+.vitest/
+coverage/
+
+# Local config
+*.local
+
+# (optional) caches
+.eslintcache
+.turbo/
+.cache/
+.parcel-cache/
