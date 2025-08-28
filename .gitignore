@@ -15,7 +15,6 @@ dist-ssr/
 node_modules/
 
 # Environment
-.env
 *.local
 
 # Editor/OS files
